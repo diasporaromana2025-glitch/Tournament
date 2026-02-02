@@ -57,10 +57,14 @@
         .single-list-view.active { display: block; }
         .three-column-view { display: grid; }
         .three-column-view.hidden { display: none; }
-        .unavailable-member { background-color: #fef2f2 !important; border-color: #fca5a5 !important; }
-        .dark .unavailable-member { background-color: #7f1d1d !important; border-color: #dc2626 !important; }
-        .preselected { background-color: #dbeafe !important; border-color: #3b82f6 !important; }
-        .dark .preselected { background-color: #1e3a8a !important; border-color: #60a5fa !important; }
+        .unavailable-badge { 
+            background-color: rgba(239, 68, 68, 0.1); 
+            color: #dc2626; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-size: 10px; 
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen transition-colors duration-300">
@@ -329,19 +333,13 @@
     <div id="generateListModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-xl p-8 max-w-4xl w-full mx-4 fade-in max-h-[80vh] overflow-y-auto">
             <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="selectPlayers">Selectați 5 jucători pentru înlocuire</h3>
-            <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p class="text-sm text-yellow-800">
-                    <span class="font-semibold" data-lang="autoSelected">Selecție automată:</span> 
-                    <span data-lang="autoSelectedDesc">Jucătorii indisponibili din lista principală sunt preselecțați (roșu). Aceștia vor fi înlocuiți automat.</span>
-                </p>
-            </div>
             <div id="currentListForReplace" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 <!-- Current list items will be inserted here -->
             </div>
             <div class="flex justify-between items-center">
                 <p class="text-gray-600" data-lang="selectedCount">Selectați: <span id="selectedCount" class="font-bold text-blue-600">0</span>/5</p>
                 <div class="flex space-x-3">
-                    <button onclick="showConfirmationModal()" id="continueBtn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled data-lang="continue">Continuă</button>
+                    <button onclick="showConfirmationModal()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="continue">Continuă</button>
                     <button onclick="closeModal('generateListModal')" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
                 </div>
             </div>
@@ -476,9 +474,7 @@
                 setUnavailableTitle: "Setare Indisponibilitate",
                 save: "Salvează",
                 clearUnavailable: "Șterge indisponibilitatea",
-                backToAll: "Înapoi la toate listele",
-                autoSelected: "Selecție automată:",
-                autoSelectedDesc: "Jucătorii indisponibili din lista principală sunt preselecțați (roșu). Aceștia vor fi înlocuiți automat."
+                backToAll: "Înapoi la toate listele"
             },
             en: {
                 title: "Diaspora Romana Tournament",
@@ -527,9 +523,7 @@
                 setUnavailableTitle: "Set Unavailability",
                 save: "Save",
                 clearUnavailable: "Clear Unavailability",
-                backToAll: "Back to all lists",
-                autoSelected: "Auto selection:",
-                autoSelectedDesc: "Unavailable players from main list are pre-selected (red). These will be automatically replaced."
+                backToAll: "Back to all lists"
             }
         };
 
@@ -685,7 +679,7 @@
                              member.status === 'main' ? '🏆' : '⏳';
                 
                 return `
-                    <div class="list-item flex items-center justify-between bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 ${member.unavailableDate ? 'unavailable-member' : ''}">
+                    <div class="list-item flex items-center justify-between bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200">
                         <div class="flex items-center space-x-3">
                             <span class="position-badge text-sm font-bold text-gray-500">#${index + 1}</span>
                             <span class="text-lg">${emoji}</span>
@@ -772,18 +766,21 @@
         }
 
         function showAllLists() {
-            // Main list
+            // Main list - include unavailable members but mark them
             const mainMembers = appState.members.filter(m => m.status === 'main');
             const mainContainer = document.getElementById('mainListContent');
             
             mainContainer.innerHTML = mainMembers.map((member, index) => `
-                <div class="list-item flex items-center justify-between bg-white rounded-lg hover:bg-gray-100 transition border border-gray-200 ${member.unavailableDate ? 'unavailable-member' : ''}">
+                <div class="list-item flex items-center justify-between bg-white rounded-lg hover:bg-gray-100 transition border border-gray-200 ${member.unavailableDate ? 'border-red-300 bg-red-50' : ''}">
                     <div class="flex items-center space-x-3">
                         <span class="position-badge text-sm font-bold text-gray-500">#${index + 1}</span>
                         <span class="text-lg">🏆</span>
                         <div>
                             <p class="font-medium text-gray-900">${member.name}</p>
-                            <p class="text-xs text-gray-600">${member.unavailableDate ? `${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate}` : (currentLanguage === 'ro' ? 'Listă Principală' : 'Main List')}</p>
+                            <p class="text-xs text-gray-600">
+                                ${currentLanguage === 'ro' ? 'Listă Principală' : 'Main List'}
+                                ${member.unavailableDate ? `<span class="unavailable-badge">${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate}</span>` : ''}
+                            </p>
                         </div>
                     </div>
                     ${appState.isAdmin ? `
@@ -902,42 +899,27 @@
             const currentMain = appState.members.filter(m => m.status === 'main');
             const container = document.getElementById('currentListForReplace');
             
-            // Find unavailable members in main list
-            const unavailableInMain = currentMain.filter(m => m.unavailableDate);
-            const unavailableIds = unavailableInMain.map(m => m.id);
-            
-            container.innerHTML = currentMain.map(member => {
-                const isUnavailable = member.unavailableDate;
-                const isPreselected = unavailableIds.includes(member.id);
-                
-                return `
-                    <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition ${isUnavailable ? 'unavailable-member' : ''} ${isPreselected ? 'preselected' : ''}">
-                        <input type="checkbox" value="${member.id}" onchange="updateSelectedCount()" class="w-4 h-4 text-blue-600" ${isPreselected ? 'checked' : ''} ${isUnavailable ? 'disabled' : ''}>
-                        <span>${member.name}</span>
-                        ${isUnavailable ? `<span class="text-xs text-red-600 ml-2">(${currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable'})</span>` : ''}
-                    </label>
-                `;
-            }).join('');
-
-            // Update selected count with preselected unavailable members
-            updateSelectedCount();
+            container.innerHTML = currentMain.map(member => `
+                <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                    <input type="checkbox" value="${member.id}" onchange="updateSelectedCount()" class="w-4 h-4 text-blue-600">
+                    <span>${member.name}</span>
+                </label>
+            `).join('');
 
             document.getElementById('generateListModal').classList.remove('hidden');
         }
 
         function updateSelectedCount() {
             const checkboxes = document.querySelectorAll('#currentListForReplace input[type="checkbox"]:checked');
-            const count = checkboxes.length;
-            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('selectedCount').textContent = checkboxes.length;
             
-            // Enable/disable continue button based on selection count
-            const continueBtn = document.getElementById('continueBtn');
-            if (count === 5) {
-                continueBtn.disabled = false;
-                continueBtn.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
-            } else {
-                continueBtn.disabled = true;
-                continueBtn.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+            // Limit selection to 5 checkboxes
+            if (checkboxes.length > 5) {
+                // Uncheck the last checked box
+                const lastChecked = checkboxes[checkboxes.length - 1];
+                lastChecked.checked = false;
+                document.getElementById('selectedCount').textContent = checkboxes.length - 1;
+                showToast(currentLanguage === 'ro' ? 'Puteți selecta maximum 5 jucători!' : 'You can select a maximum of 5 players!', 'warning');
             }
         }
 
@@ -945,10 +927,7 @@
             const checkboxes = document.querySelectorAll('#currentListForReplace input[type="checkbox"]:checked');
             
             if (checkboxes.length !== 5) {
-                const message = currentLanguage === 'ro' ? 
-                    `Trebuie să selectați exact 5 jucători! Aveți selectat ${checkboxes.length}.` :
-                    `You must select exactly 5 players! You have selected ${checkboxes.length}.`;
-                showToast(message, 'error');
+                showToast(currentLanguage === 'ro' ? 'Trebuie să selectați exact 5 jucători!' : 'You must select exactly 5 players!', 'error');
                 return;
             }
 
@@ -961,7 +940,7 @@
             const toPromote = reserveMembers.slice(0, 5);
             
             // Display confirmation
-            document.getElementById('playersToReplace').innerHTML = selectedMembers.map(m => `• ${m.name}${m.unavailableDate ? ` (${currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable'})` : ''}`).join('<br>');
+            document.getElementById('playersToReplace').innerHTML = selectedMembers.map(m => `• ${m.name}`).join('<br>');
             document.getElementById('playersToPromote').innerHTML = toPromote.length > 0 ? 
                 toPromote.map(m => `• ${m.name}`).join('<br>') : (currentLanguage === 'ro' ? 'Nu există suficienți jucători în rezerve' : 'Not enough players in reserves');
             
@@ -980,7 +959,6 @@
             // Move selected to reserve queue (end of the line - update addedDate)
             selectedMembers.forEach(member => {
                 member.status = 'reserve';
-                member.unavailableDate = null; // Clear unavailability when moving to reserve
                 member.addedDate = new Date().toISOString(); // Set to now to put at end of queue
             });
 
@@ -1172,11 +1150,9 @@
             
             member.unavailableDate = date || null;
             
-            if (member.status === 'main' && date) {
-                // Member stays in main list but is marked as unavailable
-                // Will be automatically selected for replacement in next tournament generation
-                member.addedDate = new Date().toISOString(); // Set for when moved to reserve
-            } else if (!date && member.status === 'reserve') {
+            // FIX: Don't move member from main list immediately when setting unavailable date
+            // Keep them in main list but mark as unavailable until daily list generation
+            if (member.status === 'reserve' && !date) {
                 // Check if can be promoted to main
                 const mainCount = appState.members.filter(m => m.status === 'main').length;
                 if (mainCount < 32) {
@@ -1411,7 +1387,8 @@
                     doc.addPage();
                     y = 20;
                 }
-                const unavailableText = member.unavailableDate ? ` (${currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable'})` : '';
+                const unavailableText = member.unavailableDate ? 
+                    ` (${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate})` : '';
                 doc.text(`${index + 1}. ${member.name}${unavailableText}`, 30, y);
                 y += 8;
             });
@@ -1462,7 +1439,8 @@
             const mainMembers = appState.members.filter(m => m.status === 'main').map((m, i) => ({
                 'Poziție': i + 1,
                 'Nume': m.name,
-                'Status': m.unavailableDate ? `${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${m.unavailableDate}` : (currentLanguage === 'ro' ? 'Listă Principală' : 'Main List')
+                'Status': currentLanguage === 'ro' ? 'Listă Principală' : 'Main List',
+                'Indisponibil': m.unavailableDate || ''
             }));
             
             const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
@@ -1470,7 +1448,8 @@
                 .map((m, i) => ({
                     'Poziție': i + 1,
                     'Nume': m.name,
-                    'Status': currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List'
+                    'Status': currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List',
+                    'Indisponibil': m.unavailableDate || ''
                 }));
             
             const unavailableMembers = appState.members.filter(m => m.unavailableDate).sort((a, b) => {
@@ -1480,7 +1459,10 @@
             }).map((m, i) => ({
                 'Poziție': i + 1,
                 'Nume': m.name,
-                'Status': `${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${m.unavailableDate}`
+                'Status': m.status === 'main' ? 
+                    (currentLanguage === 'ro' ? 'Listă Principală' : 'Main List') : 
+                    (currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List'),
+                'Indisponibil': m.unavailableDate
             }));
             
             const wb = XLSX.utils.book_new();
