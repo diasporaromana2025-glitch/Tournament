@@ -3,169 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diaspora Romana Tournament</title>
+    <title>Diaspora Română Tournament — Club Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         * { font-family: 'Inter', sans-serif; }
-        .dark { background-color: #1a1a1a; color: #e5e5e5; }
-        .dark .bg-white { background-color: #2a2a2a; }
-        .dark .bg-gray-50 { background-color: #1f1f1f; }
-        .dark .bg-gray-100 { background-color: #2a2a2a; }
-        .dark .text-gray-900 { color: #e5e5e5; }
-        .dark .text-gray-700 { color: #d1d1d1; }
-        .dark .text-gray-600 { color: #b3b3b3; }
-        .dark .border-gray-200 { border-color: #404040; }
-        .dark .border-gray-300 { border-color: #404040; }
-        .dark .hover\:bg-gray-100:hover { background-color: #3a3a3a; }
-        .dark .bg-blue-600 { background-color: #2563eb; }
-        .dark input, .dark select { background-color: #2a2a2a; color: #e5e5e5; border-color: #404040; }
+        body { background: linear-gradient(180deg,#f0fdf4 0%,#f8fafc 320px); }
+        .dark body, body.dark { background: radial-gradient(circle at 15% 0%, #0d1a2b 0%, #060a14 45%, #05070d 100%); }
+        .dark { background-color: #05070d; color: #e5e7eb; }
+        .dark .bg-white { background-color: #101827; }
+        .dark .bg-gray-50 { background-color: #0b1220; }
+        .dark .bg-gray-100 { background-color: #182236; }
+        .dark .text-gray-900 { color: #f1f5f9; }
+        .dark .text-gray-700 { color: #cbd5e1; }
+        .dark .text-gray-600 { color: #94a3b8; }
+        .dark .text-gray-500 { color: #94a3b8; }
+        .dark .text-gray-400 { color: #64748b; }
+        .dark .border-gray-200 { border-color: #22304a; }
+        .dark .border-gray-300 { border-color: #2c3d5c; }
+        .dark .hover\:bg-gray-100:hover { background-color: #182236; }
+        .dark input, .dark select, .dark textarea { background-color: #101827; color: #e5e7eb; border-color: #2c3d5c; }
+        .dark .player-card { background-color: #101827; border-color: #22304a; }
+        .dark .player-card:hover { background-color: #141f33; }
+
+        h1, h2, h3, .font-display { font-family: 'Rajdhani', 'Inter', sans-serif; letter-spacing: .3px; }
+        .stat-number { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 700; }
+
         .toast { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .list-item { padding: 8px 12px; }
-        .position-badge { min-width: 28px; }
-        .column-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        @media (max-width: 1024px) {
-            .column-container { grid-template-columns: 1fr; }
-        }
-        .full-width { width: 100%; max-width: 100%; padding-left: 1rem; padding-right: 1rem; }
-        @media (min-width: 640px) {
-            .full-width { padding-left: 1.5rem; padding-right: 1.5rem; }
-        }
-        @media (min-width: 1024px) {
-            .full-width { padding-left: 2rem; padding-right: 2rem; }
-        }
+        @keyframes slideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .fade-in { animation: fadeIn 0.25s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        .card-hover { transition: all .25s ease; position: relative; overflow: hidden; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(16,185,129,.16); }
+        .card-hover::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#10b981,#22ffa3); opacity:0; transition:opacity .2s ease; }
+        .card-hover:hover::before { opacity:1; }
+
+        .full-width { width: 100%; max-width: 1440px; margin: 0 auto; padding-left: 1rem; padding-right: 1rem; }
+        @media (min-width: 640px) { .full-width { padding-left: 1.5rem; padding-right: 1.5rem; } }
+        @media (min-width: 1024px) { .full-width { padding-left: 2rem; padding-right: 2rem; } }
+
         .lang-dropdown { position: relative; }
-        .lang-dropdown-menu { position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 50; }
-        .dark .lang-dropdown-menu { background: #2a2a2a; border-color: #404040; }
+        .lang-dropdown-menu { position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,.12); z-index: 50; }
+        .dark .lang-dropdown-menu { background: #101827; border-color: #22304a; }
+
+        .column-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        @media (max-width: 1024px) { .column-container { grid-template-columns: 1fr; } }
+
         .single-list-view { display: none; }
         .single-list-view.active { display: block; }
-        .three-column-view { display: grid; }
         .three-column-view.hidden { display: none; }
-        .unavailable-badge { 
-            background-color: rgba(239, 68, 68, 0.1); 
-            color: #dc2626; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            font-size: 10px; 
-            margin-left: 5px;
-        }
+
+        /* Header glow */
+        header { position: relative; }
+        header::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#10b981 20%,#22ffa3 50%,#10b981 80%,transparent); opacity:.7; }
+        .logo-badge { box-shadow: 0 0 18px rgba(16,185,129,.55), 0 0 0 3px rgba(16,185,129,.15); }
+
+        /* Ribbon */
+        .ribbon { background: linear-gradient(90deg,#022c22,#065f46 45%,#059669 75%,#10b981); color: white; position: relative; overflow:hidden; box-shadow: inset 0 -2px 12px rgba(0,0,0,.25); }
+        .ribbon::after { content:''; position:absolute; top:0; left:-30%; width:30%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent); animation: shimmer 5s ease-in-out infinite; }
+        @keyframes shimmer { 0% { left:-30%; } 50% { left:110%; } 100% { left:110%; } }
+        .ribbon span { font-family:'Rajdhani','Inter',sans-serif; font-weight:600; letter-spacing:.4px; }
+
+        /* Player cards */
+        .player-card { background: white; border: 1px solid #e5e7eb; border-left: 3px solid #d1d5db; border-radius: 12px; padding: 10px 12px; transition: all .18s ease; }
+        .player-card:hover { border-color: #a7f3d0; border-left-color:#10b981; box-shadow: 0 8px 18px rgba(16,185,129,.14); transform: translateX(2px); }
+        .dark .player-card { border-left-color:#2c3d5c; }
+        .dark .player-card:hover { border-left-color:#22ffa3; box-shadow: 0 8px 20px rgba(34,255,163,.10); }
+        .avatar-circle { width: 36px; height: 36px; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size: .78rem; color: white; background: linear-gradient(135deg,#334155,#0f172a); flex-shrink:0; box-shadow: 0 0 0 2px rgba(255,255,255,.5), 0 2px 6px rgba(0,0,0,.15); }
+        .dark .avatar-circle { box-shadow: 0 0 0 2px rgba(255,255,255,.06), 0 2px 6px rgba(0,0,0,.4); }
+        .rank-badge { min-width: 30px; text-align:center; font-weight:800; font-size:.82rem; color:#64748b; font-family:'Rajdhani','Inter',sans-serif; }
+        .rank-gold .avatar-circle { background: linear-gradient(135deg,#fde68a,#d97706); box-shadow: 0 0 12px rgba(217,119,6,.65), 0 0 0 2px #fde68a; }
+        .rank-gold .rank-badge { color:#d97706; text-shadow: 0 0 8px rgba(217,119,6,.4); }
+        .rank-gold { border-left-color:#d97706 !important; }
+        .rank-silver .avatar-circle { background: linear-gradient(135deg,#e2e8f0,#94a3b8); box-shadow: 0 0 10px rgba(148,163,184,.55), 0 0 0 2px #e2e8f0; }
+        .rank-silver .rank-badge { color:#64748b; }
+        .rank-silver { border-left-color:#94a3b8 !important; }
+        .rank-bronze .avatar-circle { background: linear-gradient(135deg,#fdba8c,#c2703d); box-shadow: 0 0 10px rgba(194,112,61,.5), 0 0 0 2px #fdba8c; }
+        .rank-bronze .rank-badge { color:#c2703d; }
+        .rank-bronze { border-left-color:#c2703d !important; }
+        .goals-pill { background:#ecfdf5; color:#047857; font-weight:800; font-size:.82rem; padding:4px 10px; border-radius:9999px; white-space:nowrap; font-family:'Rajdhani','Inter',sans-serif; }
+        .dark .goals-pill { background:rgba(34,255,163,.10); color:#4ade80; box-shadow: 0 0 10px rgba(34,255,163,.12) inset; }
+        .status-pill { font-size:.68rem; padding:1px 8px; border-radius:9999px; font-weight:600; }
+        .admin-actions button { font-size:.68rem; padding:4px 7px; border-radius:7px; font-weight:600; transition: all .15s ease; }
+        .admin-actions button:hover { transform: translateY(-1px); }
+
+        /* Secondary buttons (cancel / close / delete) — guaranteed contrast in both themes */
+        .btn-secondary { background:#e5e7eb; color:#374151; font-weight:600; }
+        .btn-secondary:hover { background:#d1d5db; }
+        .dark .btn-secondary { background:#22304a; color:#e2e8f0; }
+        .dark .btn-secondary:hover { background:#2c3d5c; }
+
+        /* Segmented control */
+        .segmented { display:inline-flex; border-radius:9999px; border:1px solid #d1d5db; overflow:hidden; }
+        .dark .segmented { border-color:#2c3d5c; }
+        .segmented button { padding:6px 18px; font-weight:700; font-size:.85rem; color:#475569; background:transparent; font-family:'Rajdhani','Inter',sans-serif; }
+        .dark .segmented button { color:#94a3b8; }
+        .segmented button.active { background:#059669; color:white; box-shadow: 0 0 12px rgba(16,185,129,.5) inset, 0 0 10px rgba(16,185,129,.35); }
+
+        .capacity-bar-track { height:6px; background:#e5e7eb; border-radius:9999px; overflow:hidden; }
+        .dark .capacity-bar-track { background:#22304a; }
+        .capacity-bar-fill { height:100%; background:#10b981; border-radius:9999px; transition: width .3s ease; box-shadow: 0 0 8px rgba(16,185,129,.6); }
+        .capacity-bar-fill.over { background:#ef4444; box-shadow: 0 0 8px rgba(239,68,68,.6); }
+
+        /* Primary action buttons get a subtle glow on hover */
+        main button[class*="bg-"], .ribbon button, header button[class*="bg-"] { transition: all .18s ease; }
+        main button.bg-emerald-600:hover, main button.bg-green-600:hover { box-shadow: 0 6px 16px rgba(16,185,129,.35); }
+        main button.bg-blue-600:hover { box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+        main button.bg-purple-600:hover { box-shadow: 0 6px 16px rgba(147,51,234,.35); }
+        main button.bg-teal-600:hover { box-shadow: 0 6px 16px rgba(13,148,136,.35); }
+        main button.bg-gray-600:hover { box-shadow: 0 6px 16px rgba(75,85,99,.3); }
+
+        #screenshotTemplate { width: 900px; background:#0b1220; color:#e5e7eb; padding: 28px 32px; }
+        #screenshotTemplate .ss-row { display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border-radius:8px; margin-bottom:4px; }
+        #screenshotTemplate .ss-row.alt { background: rgba(255,255,255,0.03); }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen transition-colors duration-300">
+<body class="min-h-screen transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div class="full-width">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-gray-900" data-lang="title">Diaspora Romana Tournament</h1>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-green-700 flex items-center justify-center text-xl">⚽</div>
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-bold text-gray-900 leading-tight" data-lang="title">Diaspora Română Tournament</h1>
+                        <p class="text-xs text-gray-500 -mt-0.5" data-lang="subtitle">FC Mobile Club Management</p>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 sm:space-x-4">
                     <div class="lang-dropdown">
                         <button onclick="toggleLangDropdown()" class="p-2 rounded-lg hover:bg-gray-100 transition flex items-center space-x-2">
                             <span id="currentLang">🇷🇴 RO</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div id="langDropdownMenu" class="hidden lang-dropdown-menu mt-2">
-                            <button onclick="changeLanguage('ro')" class="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">
-                                🇷🇴 Română
-                            </button>
-                            <button onclick="changeLanguage('en')" class="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">
-                                🇬🇧 English
-                            </button>
+                            <button onclick="changeLanguage('ro')" class="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">🇷🇴 Română</button>
+                            <button onclick="changeLanguage('en')" class="block w-full text-left px-4 py-2 hover:bg-gray-100 transition">🇬🇧 English</button>
                         </div>
                     </div>
-                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 transition">
-                        <span id="darkModeIcon">🌙</span>
-                    </button>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 transition"><span id="darkModeIcon">🌙</span></button>
                     <div id="userSection" class="flex items-center space-x-3">
-                        <span id="userInfo" class="text-gray-600"></span>
-                        <button id="loginBtn" onclick="showLogin()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="adminLogin">
-                            Admin Login
-                        </button>
-                        <button id="logoutBtn" onclick="logout()" class="hidden px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" data-lang="logout">
-                            Logout
-                        </button>
+                        <span id="userInfo" class="text-gray-600 text-sm hidden sm:inline"></span>
+                        <button id="loginBtn" onclick="showLogin()" class="px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm" data-lang="adminLogin">Admin Login</button>
+                        <button id="logoutBtn" onclick="logout()" class="hidden px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm" data-lang="logout">Logout</button>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- Scoreboard ribbon -->
+    <div class="ribbon">
+        <div class="full-width py-2 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+            <span class="font-semibold" id="ribbonSquad">⚽ —</span>
+            <span id="ribbonTop">🏅 —</span>
+            <span id="ribbonDate" class="opacity-90"></span>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="full-width py-8">
-        <!-- Status Messages -->
-        <div id="statusMessages" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+        <!-- Capacity warning -->
+        <div id="statusMessages" class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg hidden">
             <div class="flex items-center">
-                <span class="text-blue-700 font-medium">ℹ️</span>
-                <span id="statusText" class="ml-2 text-blue-700"></span>
+                <span class="text-amber-700 font-medium">⚠️</span>
+                <span id="statusText" class="ml-2 text-amber-700 text-sm"></span>
             </div>
         </div>
 
-        <!-- Dashboard Cards - 4 Columns -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div onclick="showSingleList('all')" class="card-hover bg-white p-6 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
+        <!-- Dashboard Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6 mb-8">
+            <div onclick="showSingleList('all')" class="card-hover bg-white p-5 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-600 text-sm" data-lang="totalMembers">Membri Total</p>
-                        <p id="totalMembers" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                        <p class="text-gray-600 text-xs sm:text-sm" data-lang="totalMembers">Membri Total</p>
+                        <p id="totalMembers" class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">0</p>
                     </div>
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <span class="text-2xl">👥</span>
-                    </div>
+                    <div class="bg-slate-100 p-3 rounded-lg"><span class="text-2xl">👥</span></div>
                 </div>
             </div>
-            
-            <div onclick="showSingleList('main')" class="card-hover bg-white p-6 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
+
+            <div onclick="showSingleList('main')" class="card-hover bg-white p-5 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-600 text-sm" data-lang="mainList">Listă Principală</p>
-                        <p id="mainListCount" class="text-3xl font-bold text-green-600 mt-2">32</p>
+                        <p class="text-gray-600 text-xs sm:text-sm" data-lang="mainList">Listă Principală</p>
+                        <p id="mainListCount" class="text-2xl sm:text-3xl font-bold text-green-600 mt-1">0<span class="text-base text-gray-400" id="mainListCap">/32</span></p>
                     </div>
-                    <div class="bg-green-100 p-3 rounded-lg">
-                        <span class="text-2xl">🏆</span>
+                    <div class="bg-green-100 p-3 rounded-lg"><span class="text-2xl">🏆</span></div>
+                </div>
+                <div class="capacity-bar-track mt-3"><div id="mainCapacityBar" class="capacity-bar-fill" style="width:0%"></div></div>
+            </div>
+
+            <div onclick="showSingleList('reserve')" class="card-hover bg-white p-5 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-xs sm:text-sm" data-lang="reserveList">Listă Rezerve</p>
+                        <p id="reserveListCount" class="text-2xl sm:text-3xl font-bold text-yellow-600 mt-1">0</p>
                     </div>
+                    <div class="bg-yellow-100 p-3 rounded-lg"><span class="text-2xl">⏳</span></div>
                 </div>
             </div>
-            
-            <div onclick="showSingleList('reserve')" class="card-hover bg-white p-6 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
+
+            <div onclick="showSingleList('unavailable')" class="card-hover bg-white p-5 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-600 text-sm" data-lang="reserveList">Listă Rezerve</p>
-                        <p id="reserveListCount" class="text-3xl font-bold text-yellow-600 mt-2">0</p>
+                        <p class="text-gray-600 text-xs sm:text-sm" data-lang="unavailableList">Indisponibili</p>
+                        <p id="unavailableCount" class="text-2xl sm:text-3xl font-bold text-red-600 mt-1">0</p>
                     </div>
-                    <div class="bg-yellow-100 p-3 rounded-lg">
-                        <span class="text-2xl">⏳</span>
-                    </div>
+                    <div class="bg-red-100 p-3 rounded-lg"><span class="text-2xl">🚫</span></div>
                 </div>
             </div>
-            
-            <div onclick="showSingleList('unavailable')" class="card-hover bg-white p-6 rounded-xl shadow-sm border border-gray-200 cursor-pointer">
+
+            <div class="card-hover bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-600 text-sm" data-lang="unavailableList">Indisponibili</p>
-                        <p id="unavailableCount" class="text-3xl font-bold text-red-600 mt-2">0</p>
+                        <p class="text-gray-600 text-xs sm:text-sm" data-lang="topScorer">Golgheter</p>
+                        <p id="topScorerName" class="text-base sm:text-lg font-bold text-gray-900 mt-1 truncate">—</p>
+                        <p id="topScorerGoals" class="text-xs text-amber-600 font-semibold"></p>
                     </div>
-                    <div class="bg-red-100 p-3 rounded-lg">
-                        <span class="text-2xl">🚫</span>
-                    </div>
+                    <div class="bg-amber-100 p-3 rounded-lg"><span class="text-2xl">🥇</span></div>
                 </div>
             </div>
         </div>
@@ -173,19 +235,28 @@
         <!-- Admin Controls -->
         <div id="adminControls" class="hidden mb-8 fade-in">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4" data-lang="adminPanel">Panou Administrare</h2>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                    <h2 class="text-xl font-semibold text-gray-900" data-lang="adminPanel">Panou Administrare</h2>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-gray-600" data-lang="squadSizeLabel">Dimensiune Echipă:</span>
+                        <div class="segmented">
+                            <button id="squadBtn16" onclick="setSquadSize(16)">16</button>
+                            <button id="squadBtn32" onclick="setSquadSize(32)">32</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <button onclick="generateDailyList()" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
-                        <span class="mr-2">🔄</span> <span data-lang="generateList">Generează Lista</span>
-                    </button>
-                    <button onclick="showUnlockModal()" class="px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition flex items-center justify-center">
-                        <span class="mr-2">🔓</span> <span data-lang="unlockList">Deblochează Lista</span>
-                    </button>
                     <button onclick="showAddMemberModal()" class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center">
                         <span class="mr-2">➕</span> <span data-lang="addMember">Adaugă Membru</span>
                     </button>
                     <button onclick="showBulkUploadModal()" class="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center justify-center">
                         <span class="mr-2">📤</span> <span data-lang="bulkUpload">Încărcare Bulk</span>
+                    </button>
+                    <button onclick="showDailyGoalsModal()" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center">
+                        <span class="mr-2">⚽</span> <span data-lang="dailyGoalsBtn">Goluri Zilnice</span>
+                    </button>
+                    <button onclick="showGoalsHistoryModal()" class="px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition flex items-center justify-center">
+                        <span class="mr-2">📅</span> <span data-lang="goalsHistoryBtn">Istoric Goluri</span>
                     </button>
                     <button onclick="showAuditLog()" class="px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center justify-center">
                         <span class="mr-2">📋</span> <span data-lang="auditLog">Audit Log</span>
@@ -196,221 +267,173 @@
 
         <!-- Three Column Lists Display -->
         <div id="threeColumnView" class="three-column-view bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
                 <h2 class="text-xl font-semibold text-gray-900" data-lang="memberLists">Liste Membri</h2>
-                <div class="flex space-x-3">
-                    <button onclick="exportToPDF()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                        📄 PDF
-                    </button>
-                    <button onclick="exportToExcel()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                        📊 Excel
-                    </button>
-                    <button onclick="showHistory()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        📅 <span data-lang="history">Istoric</span>
-                    </button>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="showScreenshotModal()" class="px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm">📸 <span data-lang="screenshotBtn">Captură Listă</span></button>
+                    <button onclick="exportToPDF()" class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm">📄 PDF</button>
+                    <button onclick="exportToExcel()" class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm">📊 Excel</button>
                 </div>
             </div>
-            
+
             <div class="column-container">
-                <!-- Main List Column -->
                 <div id="mainList" class="bg-gray-50 rounded-lg p-4">
                     <h3 class="font-semibold text-green-700 mb-3 flex items-center">
-                        <span class="mr-2">🏆</span> <span data-lang="mainListTitle">Listă Principală</span> (32 <span data-lang="players">jucători</span>)
+                        <span class="mr-2">🏆</span> <span data-lang="mainListTitle">Listă Principală</span>&nbsp;<span id="mainColCount">(0)</span>
                     </h3>
-                    <div id="mainListContent" class="space-y-2">
-                        <!-- Main list items will be inserted here -->
-                    </div>
+                    <div id="mainListContent" class="space-y-2"></div>
                 </div>
-                
-                <!-- Reserve List Column -->
+
                 <div id="reserveList" class="bg-gray-50 rounded-lg p-4">
                     <h3 class="font-semibold text-yellow-700 mb-3 flex items-center">
-                        <span class="mr-2">⏳</span> <span data-lang="reserveListTitle">Listă Rezerve</span>
+                        <span class="mr-2">⏳</span> <span data-lang="reserveListTitle">Listă Rezerve</span>&nbsp;<span id="reserveColCount">(0)</span>
                     </h3>
-                    <div id="reserveListContent" class="space-y-2">
-                        <!-- Reserve list items will be inserted here -->
-                    </div>
+                    <div id="reserveListContent" class="space-y-2"></div>
                 </div>
-                
-                <!-- Unavailable List Column -->
+
                 <div id="unavailableList" class="bg-gray-50 rounded-lg p-4">
                     <h3 class="font-semibold text-red-700 mb-3 flex items-center">
-                        <span class="mr-2">🚫</span> <span data-lang="unavailableListTitle">Indisponibili</span>
+                        <span class="mr-2">🚫</span> <span data-lang="unavailableListTitle">Indisponibili</span>&nbsp;<span id="unavailableColCount">(0)</span>
                     </h3>
-                    <div id="unavailableListContent" class="space-y-2">
-                        <!-- Unavailable list items will be inserted here -->
-                    </div>
+                    <div id="unavailableListContent" class="space-y-2"></div>
                 </div>
             </div>
         </div>
 
         <!-- Single List View -->
         <div id="singleListView" class="single-list-view bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
                 <h2 id="singleListTitle" class="text-xl font-semibold text-gray-900"></h2>
-                <div class="flex space-x-3">
-                    <button onclick="backToThreeColumns()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                        ← <span data-lang="backToAll">Înapoi la toate listele</span>
-                    </button>
-                    <button onclick="exportToPDF()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                        📄 PDF
-                    </button>
-                    <button onclick="exportToExcel()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
-                        📊 Excel
-                    </button>
-                    <button onclick="showHistory()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        📅 <span data-lang="history">Istoric</span>
-                    </button>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="backToThreeColumns()" class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm">← <span data-lang="backToAll">Înapoi</span></button>
+                    <button onclick="showScreenshotModal()" class="px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm">📸 <span data-lang="screenshotBtn">Captură Listă</span></button>
+                    <button onclick="exportToPDF()" class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm">📄 PDF</button>
+                    <button onclick="exportToExcel()" class="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm">📊 Excel</button>
                 </div>
             </div>
-            <div id="singleListContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <!-- Single list items will be inserted here -->
-            </div>
+            <div id="singleListContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
         </div>
     </main>
 
     <!-- Modals -->
-    <!-- Login Modal -->
-    <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
+    <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('loginModal')">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full fade-in">
             <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="adminLoginTitle">Autentificare Administrator</h3>
-            <input type="password" id="adminPassword" placeholder="Introduceți parola" 
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4">
+            <input type="password" id="adminPassword" placeholder="Introduceți parola" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-4">
             <div class="flex space-x-3">
-                <button onclick="login()" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="login">Login</button>
-                <button onclick="closeModal('loginModal')" class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
+                <button onclick="login()" class="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition" data-lang="login">Login</button>
+                <button onclick="closeModal('loginModal')" class="flex-1 px-4 py-3 btn-secondary rounded-lg transition" data-lang="cancel">Anulează</button>
             </div>
         </div>
     </div>
 
-    <!-- Unlock Modal -->
-    <div id="unlockModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
-            <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="unlockTitle">Deblochează Lista Zilnică</h3>
-            <p class="text-gray-600 mb-4" data-lang="unlockDesc">Introduceți parola pentru a debloca lista și a o regenera:</p>
-            <input type="password" id="unlockPassword" placeholder="Parolă deblocare" 
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6">
-            <div class="flex space-x-3">
-                <button onclick="unlockDailyList()" class="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition" data-lang="unlock">Deblochează</button>
-                <button onclick="closeModal('unlockModal')" class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Member Modal -->
-    <div id="addMemberModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
+    <div id="addMemberModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('addMemberModal')">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full fade-in">
             <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="addMemberTitle">Adaugă Membru Nou</h3>
-            <input type="text" id="newMemberName" placeholder="Nume membru" 
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2" data-lang="unavailableDate">Data indisponibilității (ZZ-LL-AAAA)</label>
-            <input type="text" id="newMemberUnavailableDate" placeholder="ex: 25-12-2024" 
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6">
+            <input type="text" id="newMemberName" placeholder="Nume membru" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2" data-lang="initialStatus">Listă inițială</label>
+            <select id="newMemberStatus" class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6">
+                <option value="reserve" data-lang="statusReserve">Rezervă</option>
+                <option value="main" data-lang="statusMain">Principal</option>
+            </select>
             <div class="flex space-x-3">
                 <button onclick="addMember()" class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition" data-lang="add">Adaugă</button>
-                <button onclick="closeModal('addMemberModal')" class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
+                <button onclick="closeModal('addMemberModal')" class="flex-1 px-4 py-3 btn-secondary rounded-lg transition" data-lang="cancel">Anulează</button>
             </div>
         </div>
     </div>
 
-    <!-- Bulk Upload Modal -->
-    <div id="bulkUploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
+    <div id="bulkUploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('bulkUploadModal')">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full fade-in">
             <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="bulkUploadTitle">Încărcare Bulk</h3>
             <p class="text-sm text-red-600 mb-4" data-lang="bulkWarning">⚠️ Atenție: Această acțiune va șterge toți membrii existenți!</p>
-            <input type="password" id="bulkPassword" placeholder="Parolă încărcare" 
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4">
-            <textarea id="bulkData" placeholder="Introduceți numele (unul pe linie)" 
-                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6 h-32"></textarea>
+            <textarea id="bulkData" placeholder="Introduceți numele (unul pe linie)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-6 h-32"></textarea>
             <div class="flex space-x-3">
                 <button onclick="processBulkUpload()" class="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition" data-lang="upload">Încarcă</button>
-                <button onclick="closeModal('bulkUploadModal')" class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
+                <button onclick="closeModal('bulkUploadModal')" class="flex-1 px-4 py-3 btn-secondary rounded-lg transition" data-lang="cancel">Anulează</button>
             </div>
         </div>
     </div>
 
-    <!-- Generate List Modal -->
-    <div id="generateListModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-4xl w-full mx-4 fade-in max-h-[80vh] overflow-y-auto">
-            <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="selectPlayers">Selectați 5 jucători pentru înlocuire</h3>
-            <div id="currentListForReplace" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                <!-- Current list items will be inserted here -->
+    <div id="dailyGoalsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('dailyGoalsModal')">
+        <div class="bg-white rounded-xl p-8 max-w-3xl w-full fade-in max-h-[85vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2" data-lang="dailyGoalsTitle">Actualizare Goluri Zilnice</h3>
+            <p class="text-sm text-gray-600 mb-4" data-lang="dailyGoalsDesc">Selectați data și introduceți golurile marcate de fiecare jucător.</p>
+            <div class="flex items-center gap-3 mb-5">
+                <label class="text-sm font-medium text-gray-700" data-lang="dateLabel">Data</label>
+                <input type="date" id="dailyGoalsDate" onchange="renderDailyGoalsList()" class="px-3 py-2 border border-gray-300 rounded-lg">
             </div>
-            <div class="flex justify-between items-center">
-                <p class="text-gray-600" data-lang="selectedCount">Selectați: <span id="selectedCount" class="font-bold text-blue-600">0</span>/5</p>
-                <div class="flex space-x-3">
-                    <button onclick="showConfirmationModal()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="continue">Continuă</button>
-                    <button onclick="closeModal('generateListModal')" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div id="confirmationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 fade-in">
-            <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="confirmReplace">Confirmare Înlocuire</h3>
-            <div class="space-y-4 mb-6">
-                <div class="bg-red-50 p-4 rounded-lg">
-                    <p class="font-semibold text-red-700 mb-2" data-lang="playersToReplace">Jucători care vor fi înlocuiți:</p>
-                    <div id="playersToReplace" class="text-sm text-red-600"></div>
-                </div>
-                <div class="bg-green-50 p-4 rounded-lg">
-                    <p class="font-semibold text-green-700 mb-2" data-lang="playersToEnter">Jucători care vor intra în listă:</p>
-                    <div id="playersToPromote" class="text-sm text-green-600"></div>
-                </div>
-            </div>
-            <div class="flex space-x-3">
-                <button onclick="confirmGenerateList()" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="confirmReplaceBtn">Confirmă Înlocuirea</button>
-                <button onclick="backToSelection()" class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="backToSelection">Revino la Selecție</button>
-                <button onclick="closeModal('confirmationModal')" class="flex-1 px-6 py-3 bg-red-200 text-red-700 rounded-lg hover:bg-red-300 transition" data-lang="cancelAll">Anulează Tot</button>
+            <div id="dailyGoalsContent" class="space-y-1"></div>
+            <div class="flex space-x-3 mt-6">
+                <button onclick="saveDailyGoals()" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="saveGoals">Salvează Golurile</button>
+                <button onclick="closeModal('dailyGoalsModal')" class="flex-1 px-4 py-3 btn-secondary rounded-lg transition" data-lang="cancel">Anulează</button>
             </div>
         </div>
     </div>
 
-    <!-- History Modal -->
-    <div id="historyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-4xl w-full mx-4 fade-in max-h-[80vh] overflow-y-auto">
-            <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="historyTitle">Istoric Listelor Zilnice</h3>
-            <div id="historyContent" class="space-y-4">
-                <!-- History items will be inserted here -->
-            </div>
-            <button onclick="closeModal('historyModal')" class="mt-6 w-full px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="close">Închide</button>
+    <div id="goalHistoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('goalHistoryModal')">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full fade-in max-h-[85vh] overflow-y-auto">
+            <h3 id="goalHistoryPlayerName" class="text-xl font-bold text-gray-900 mb-1"></h3>
+            <p class="text-sm text-gray-500 mb-4" data-lang="goalHistoryTitle">Istoric Goluri</p>
+            <div id="goalHistoryContent" class="space-y-2 mb-6"></div>
+            <button onclick="closeModal('goalHistoryModal')" class="w-full px-6 py-3 btn-secondary rounded-lg transition" data-lang="close">Închide</button>
         </div>
     </div>
 
-    <!-- Audit Log Modal -->
-    <div id="auditLogModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-4xl w-full mx-4 fade-in max-h-[80vh] overflow-y-auto">
+    <div id="screenshotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('screenshotModal')">
+        <div class="bg-white rounded-xl p-6 max-w-4xl w-full fade-in max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900" data-lang="screenshotTitle">Captură Listă Principală</h3>
+                <button onclick="closeModal('screenshotModal')" class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="border border-gray-200 rounded-lg overflow-auto max-h-[65vh] flex justify-center bg-gray-100 p-4">
+                <div id="screenshotTemplate"></div>
+            </div>
+            <div class="flex space-x-3 mt-5">
+                <button id="screenshotDownloadBtn" onclick="downloadScreenshot()" class="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition" data-lang="downloadImage">Descarcă Imaginea</button>
+                <button onclick="closeModal('screenshotModal')" class="flex-1 px-4 py-3 btn-secondary rounded-lg transition" data-lang="close">Închide</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="goalsHistoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('goalsHistoryModal')">
+        <div class="bg-white rounded-xl p-8 max-w-2xl w-full fade-in max-h-[85vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2" data-lang="goalsHistoryByDateTitle">Istoric Goluri pe Zile</h3>
+            <p class="text-sm text-gray-600 mb-4" data-lang="goalsHistoryByDateDesc">Alegeți o dată pentru a vedea golurile marcate de fiecare jucător în acea zi.</p>
+            <div class="flex items-center gap-3 mb-5">
+                <label class="text-sm font-medium text-gray-700" data-lang="dateLabel">Data</label>
+                <select id="goalsHistoryDateSelect" onchange="renderGoalsHistoryForDate()" class="px-3 py-2 border border-gray-300 rounded-lg flex-1"></select>
+            </div>
+            <div id="goalsHistoryContent" class="space-y-2"></div>
+            <button onclick="closeModal('goalsHistoryModal')" class="mt-6 w-full px-6 py-3 btn-secondary rounded-lg transition" data-lang="close">Închide</button>
+        </div>
+    </div>
+
+    <div id="auditLogModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('auditLogModal')">
+        <div class="bg-white rounded-xl p-8 max-w-3xl w-full fade-in max-h-[80vh] overflow-y-auto">
             <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="auditLogTitle">Audit Log</h3>
-            <div id="auditLogContent" class="space-y-2">
-                <!-- Audit log items will be inserted here -->
-            </div>
-            <button onclick="closeModal('auditLogModal')" class="mt-6 w-full px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="close">Închide</button>
+            <div id="auditLogContent" class="space-y-2"></div>
+            <button onclick="closeModal('auditLogModal')" class="mt-6 w-full px-6 py-3 btn-secondary rounded-lg transition" data-lang="close">Închide</button>
         </div>
     </div>
 
-    <!-- Set Unavailable Modal -->
-    <div id="setUnavailableModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
+    <div id="setUnavailableModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('setUnavailableModal')">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full fade-in">
             <h3 class="text-2xl font-bold text-gray-900 mb-6" data-lang="setUnavailableTitle">Setare Indisponibilitate</h3>
             <p id="unavailableMemberName" class="text-gray-700 mb-4"></p>
             <label class="block text-sm font-medium text-gray-700 mb-2" data-lang="unavailableDate">Data indisponibilității (ZZ-LL-AAAA)</label>
-            <input type="text" id="unavailableDateInput" placeholder="ex: 25-12-2024" 
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6">
+            <input type="text" id="unavailableDateInput" placeholder="ex: 25-12-2026" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent mb-6">
             <div class="flex space-x-3">
                 <button onclick="confirmSetUnavailable()" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-lang="save">Salvează</button>
-                <button onclick="clearUnavailable()" class="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-600 transition" data-lang="clearUnavailable">Șterge indisponibilitatea</button>
-                <button onclick="closeModal('setUnavailableModal')" class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" data-lang="cancel">Anulează</button>
+                <button onclick="closeModal('setUnavailableModal')" class="flex-1 px-4 py-3 btn-secondary rounded-lg transition" data-lang="cancel">Anulează</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Container -->
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <script>
-        // Initialize Firebase
+        // ---------- Firebase ----------
         const firebaseConfig = {
             apiKey: "AIzaSyAg-8kByVcC4gh1FEuZJvnhs525nQShixA",
             authDomain: "diaspora-romana-15c53.firebaseapp.com",
@@ -421,156 +444,108 @@
             appId: "1:983580221213:web:d9f4b82f8acb7ec47f8bf4",
             measurementId: "G-HHCTDB7CFS"
         };
-
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Language system
+        // ---------- Language ----------
         const translations = {
             ro: {
-                title: "Diaspora Romana Tournament",
-                adminLogin: "Admin Login",
-                logout: "Logout",
-                totalMembers: "Membri Total",
-                mainList: "Listă Principală",
-                reserveList: "Listă Rezerve",
-                unavailableList: "Indisponibili",
-                adminPanel: "Panou Administrare",
-                generateList: "Generează Lista",
-                unlockList: "Deblochează Lista",
-                addMember: "Adaugă Membru",
-                bulkUpload: "Încărcare Bulk",
-                auditLog: "Audit Log",
-                memberLists: "Liste Membri",
-                history: "Istoric",
-                players: "jucători",
-                mainListTitle: "Listă Principală",
-                reserveListTitle: "Listă Rezerve",
-                unavailableListTitle: "Indisponibili",
-                adminLoginTitle: "Autentificare Administrator",
-                login: "Login",
-                cancel: "Anulează",
-                unlockTitle: "Deblochează Lista Zilnică",
-                unlockDesc: "Introduceți parola pentru a debloca lista și a o regenera:",
-                unlock: "Deblochează",
-                addMemberTitle: "Adaugă Membru Nou",
-                unavailableDate: "Data indisponibilității (ZZ-LL-AAAA)",
-                add: "Adaugă",
-                bulkUploadTitle: "Încărcare Bulk",
-                bulkWarning: "⚠️ Atenție: Această acțiune va șterge toți membrii existenți!",
-                upload: "Încarcă",
-                selectPlayers: "Selectați 5 jucători pentru înlocuire",
-                selectedCount: "Selectați: <span class=\"font-bold text-blue-600\">0</span>/5",
-                continue: "Continuă",
-                confirmReplace: "Confirmare Înlocuire",
-                playersToReplace: "Jucători care vor fi înlocuiți:",
-                playersToEnter: "Jucători care vor intra în listă:",
-                confirmReplaceBtn: "Confirmă Înlocuirea",
-                backToSelection: "Revino la Selecție",
-                cancelAll: "Anulează Tot",
-                historyTitle: "Istoric Listelor Zilnice",
-                close: "Închide",
-                auditLogTitle: "Audit Log",
-                setUnavailableTitle: "Setare Indisponibilitate",
-                save: "Salvează",
-                clearUnavailable: "Șterge indisponibilitatea",
-                backToAll: "Înapoi la toate listele"
+                title: "Diaspora Română Tournament",
+                subtitle: "FC Mobile Club Management",
+                adminLogin: "Admin Login", logout: "Logout",
+                totalMembers: "Membri Total", mainList: "Listă Principală", reserveList: "Listă Rezerve", unavailableList: "Indisponibili",
+                topScorer: "Golgheter",
+                adminPanel: "Panou Administrare", squadSizeLabel: "Dimensiune Echipă:",
+                addMember: "Adaugă Membru", bulkUpload: "Încărcare Bulk", dailyGoalsBtn: "Goluri Zilnice", auditLog: "Audit Log",
+                memberLists: "Liste Membri", screenshotBtn: "Captură Listă",
+                mainListTitle: "Listă Principală", reserveListTitle: "Listă Rezerve", unavailableListTitle: "Indisponibili",
+                adminLoginTitle: "Autentificare Administrator", login: "Login", cancel: "Anulează",
+                addMemberTitle: "Adaugă Membru Nou", initialStatus: "Listă inițială", add: "Adaugă",
+                statusMain: "Principal", statusReserve: "Rezervă", statusUnavailable: "Indisponibil",
+                bulkUploadTitle: "Încărcare Bulk", bulkWarning: "⚠️ Atenție: Această acțiune va șterge toți membrii existenți!", upload: "Încarcă",
+                dailyGoalsTitle: "Actualizare Goluri Zilnice", dailyGoalsDesc: "Selectați data și introduceți golurile marcate de fiecare jucător.",
+                dateLabel: "Data", saveGoals: "Salvează Golurile",
+                goalHistoryTitle: "Istoric Goluri",
+                goalsHistoryBtn: "Istoric Goluri", goalsHistoryByDateTitle: "Istoric Goluri pe Zile",
+                goalsHistoryByDateDesc: "Alegeți o dată pentru a vedea golurile marcate de fiecare jucător în acea zi.",
+                noHistoryDates: "Nu există încă goluri înregistrate.", totalForDate: "Total zi",
+                screenshotTitle: "Captură Listă Principală", downloadImage: "Descarcă Imaginea",
+                auditLogTitle: "Audit Log", setUnavailableTitle: "Setare Indisponibilitate",
+                save: "Salvează", backToAll: "Înapoi", close: "Închide",
+                unavailableDate: "Data indisponibilității (ZZ-LL-AAAA)"
             },
             en: {
                 title: "Diaspora Romana Tournament",
-                adminLogin: "Admin Login",
-                logout: "Logout",
-                totalMembers: "Total Members",
-                mainList: "Main List",
-                reserveList: "Reserve List",
-                unavailableList: "Unavailable",
-                adminPanel: "Admin Panel",
-                generateList: "Generate List",
-                unlockList: "Unlock List",
-                addMember: "Add Member",
-                bulkUpload: "Bulk Upload",
-                auditLog: "Audit Log",
-                memberLists: "Member Lists",
-                history: "History",
-                players: "players",
-                mainListTitle: "Main List",
-                reserveListTitle: "Reserve List",
-                unavailableListTitle: "Unavailable",
-                adminLoginTitle: "Administrator Login",
-                login: "Login",
-                cancel: "Cancel",
-                unlockTitle: "Unlock Daily List",
-                unlockDesc: "Enter password to unlock and regenerate the list:",
-                unlock: "Unlock",
-                addMemberTitle: "Add New Member",
-                unavailableDate: "Unavailable Date (DD-MM-YYYY)",
-                add: "Add",
-                bulkUploadTitle: "Bulk Upload",
-                bulkWarning: "⚠️ Warning: This action will delete all existing members!",
-                upload: "Upload",
-                selectPlayers: "Select 5 players to replace",
-                selectedCount: "Select: <span class=\"font-bold text-blue-600\">0</span>/5",
-                continue: "Continue",
-                confirmReplace: "Confirm Replacement",
-                playersToReplace: "Players to be replaced:",
-                playersToEnter: "Players who will enter the list:",
-                confirmReplaceBtn: "Confirm Replacement",
-                backToSelection: "Back to Selection",
-                cancelAll: "Cancel All",
-                historyTitle: "Daily List History",
-                close: "Close",
-                auditLogTitle: "Audit Log",
-                setUnavailableTitle: "Set Unavailability",
-                save: "Save",
-                clearUnavailable: "Clear Unavailability",
-                backToAll: "Back to all lists"
+                subtitle: "FC Mobile Club Management",
+                adminLogin: "Admin Login", logout: "Logout",
+                totalMembers: "Total Members", mainList: "Main List", reserveList: "Reserve List", unavailableList: "Unavailable",
+                topScorer: "Top Scorer",
+                adminPanel: "Admin Panel", squadSizeLabel: "Squad Size:",
+                addMember: "Add Member", bulkUpload: "Bulk Upload", dailyGoalsBtn: "Daily Goals", auditLog: "Audit Log",
+                memberLists: "Member Lists", screenshotBtn: "List Screenshot",
+                mainListTitle: "Main List", reserveListTitle: "Reserve List", unavailableListTitle: "Unavailable",
+                adminLoginTitle: "Administrator Login", login: "Login", cancel: "Cancel",
+                addMemberTitle: "Add New Member", initialStatus: "Initial list", add: "Add",
+                statusMain: "Main", statusReserve: "Reserve", statusUnavailable: "Unavailable",
+                bulkUploadTitle: "Bulk Upload", bulkWarning: "⚠️ Warning: This action will delete all existing members!", upload: "Upload",
+                dailyGoalsTitle: "Update Daily Goals", dailyGoalsDesc: "Select the date and enter the goals scored by each player.",
+                dateLabel: "Date", saveGoals: "Save Goals",
+                goalHistoryTitle: "Goal History",
+                goalsHistoryBtn: "Goals History", goalsHistoryByDateTitle: "Goals History by Date",
+                goalsHistoryByDateDesc: "Pick a date to see the goals scored by each player that day.",
+                noHistoryDates: "No goals recorded yet.", totalForDate: "Day total",
+                screenshotTitle: "Main List Screenshot", downloadImage: "Download Image",
+                auditLogTitle: "Audit Log", setUnavailableTitle: "Set Unavailability",
+                save: "Save", backToAll: "Back", close: "Close",
+                unavailableDate: "Unavailable Date (DD-MM-YYYY)"
             }
         };
 
         let currentLanguage = localStorage.getItem('language') || 'ro';
 
-        // Application State
+        // ---------- App State ----------
         let appState = {
             isAdmin: localStorage.getItem('isAdmin') === 'true',
             members: [],
-            dailyList: null,
-            selectedForReplace: [],
-            history: [],
+            squadSize: 32,
             auditLog: [],
             currentUnavailableMember: null,
-            currentView: 'threeColumns' // 'threeColumns' or 'singleList'
+            currentGoalHistoryMemberId: null,
+            currentView: 'threeColumns'
         };
 
-        // Firebase functions
+        // ---------- Firebase sync ----------
         function loadFromFirebase() {
             const dataRef = database.ref('tournamentData');
-            
             dataRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    appState.members = data.members || [];
-                    appState.dailyList = data.dailyList || null;
-                    appState.history = data.history || [];
+                    appState.members = (data.members || []).map(migrateMember);
+                    appState.squadSize = data.squadSize === 16 ? 16 : 32;
                     appState.auditLog = data.auditLog || [];
                 } else {
                     initializeSampleData();
                 }
-                updateDashboard();
-                if (appState.currentView === 'threeColumns') {
-                    showAllLists();
-                }
-                checkDailyListStatus();
-                checkUnavailableDates();
+                renderAll();
             });
         }
 
-        function saveToFirebase() {
-            const data = {
-                members: appState.members,
-                dailyList: appState.dailyList,
-                history: appState.history,
-                auditLog: appState.auditLog
+        function migrateMember(m) {
+            const goals = m.goals || {};
+            let status = m.status === 'main' || m.status === 'reserve' || m.status === 'unavailable' ? m.status : 'reserve';
+            let unavailableDate = m.unavailableDate || null;
+            if (unavailableDate && status !== 'unavailable') status = 'unavailable';
+            if (status === 'unavailable' && !unavailableDate) status = 'reserve';
+            return {
+                id: m.id, name: m.name, status: status,
+                unavailableDate: status === 'unavailable' ? unavailableDate : null,
+                addedDate: m.addedDate || new Date(0).toISOString(),
+                goals: goals
             };
+        }
+
+        function saveToFirebase() {
+            const data = { members: appState.members, squadSize: appState.squadSize, auditLog: appState.auditLog };
             database.ref('tournamentData').set(data);
         }
 
@@ -587,135 +562,80 @@
                 'Mihai Ghiță', 'Anca Bărbulescu', 'Ionel Păun', 'Elena Dobre',
                 'Adrian Chiriac', 'Sorina Neagu', 'Vasile Stoian', 'Carmen Preda'
             ];
-
             appState.members = sampleNames.map((name, index) => ({
-                id: index + 1,
-                name: name,
-                status: index < 32 ? 'main' : 'reserve',
-                unavailableDate: null,
-                addedDate: new Date().toISOString()
+                id: index + 1, name: name, status: index < 32 ? 'main' : 'reserve',
+                unavailableDate: null, addedDate: new Date().toISOString(), goals: {}
             }));
-
+            appState.squadSize = 32;
             saveToFirebase();
         }
 
-        // Initialize application
         function initApp() {
             loadFromFirebase();
             applyLanguage(currentLanguage);
             updateLoginState();
+            document.getElementById('ribbonDate').textContent = new Date().toLocaleDateString(currentLanguage === 'ro' ? 'ro-RO' : 'en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+            const dg = document.getElementById('dailyGoalsDate');
+            if (dg) dg.value = todayISO();
         }
 
-        // Language functions
-        function toggleLangDropdown() {
-            const menu = document.getElementById('langDropdownMenu');
-            menu.classList.toggle('hidden');
+        function todayISO() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
         }
 
+        // ---------- Helpers ----------
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : String(str);
+            return div.innerHTML;
+        }
+
+        function getTotalGoals(member) {
+            if (!member.goals) return 0;
+            return Object.values(member.goals).reduce((a, b) => a + (parseInt(b) || 0), 0);
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        }
+
+        function formatDateDisplay(isoDate) {
+            if (!isoDate) return '';
+            const [y, m, d] = isoDate.split('-');
+            return `${d}-${m}-${y}`;
+        }
+
+        function sortByGoalsDesc(list) {
+            return [...list].sort((a, b) => getTotalGoals(b) - getTotalGoals(a) || a.name.localeCompare(b.name));
+        }
+
+        function statusLabel(member) {
+            if (member.status === 'main') return currentLanguage === 'ro' ? 'Principal' : 'Main';
+            if (member.status === 'unavailable') return (currentLanguage === 'ro' ? 'Indisponibil până la ' : 'Unavailable until ') + member.unavailableDate;
+            return currentLanguage === 'ro' ? 'Rezervă' : 'Reserve';
+        }
+
+        // ---------- Language ----------
+        function toggleLangDropdown() { document.getElementById('langDropdownMenu').classList.toggle('hidden'); }
         function changeLanguage(lang) {
             currentLanguage = lang;
             localStorage.setItem('language', lang);
             applyLanguage(lang);
             document.getElementById('langDropdownMenu').classList.add('hidden');
+            renderAll();
         }
-
         function applyLanguage(lang) {
-            const elements = document.querySelectorAll('[data-lang]');
-            elements.forEach(element => {
-                const key = element.getAttribute('data-lang');
-                if (translations[lang][key]) {
-                    element.innerHTML = translations[lang][key];
-                }
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (translations[lang][key]) el.innerHTML = translations[lang][key];
             });
-            
-            // Update current language display
             document.getElementById('currentLang').textContent = lang === 'ro' ? '🇷🇴 RO' : '🇬🇧 EN';
         }
 
-        // View functions
-        function showSingleList(listType) {
-            appState.currentView = 'singleList';
-            document.getElementById('threeColumnView').classList.add('hidden');
-            document.getElementById('singleListView').classList.add('active');
-            
-            const titles = {
-                'all': currentLanguage === 'ro' ? 'Toți Membrii' : 'All Members',
-                'main': currentLanguage === 'ro' ? 'Listă Principală' : 'Main List',
-                'reserve': currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List',
-                'unavailable': currentLanguage === 'ro' ? 'Indisponibili' : 'Unavailable'
-            };
-            
-            document.getElementById('singleListTitle').textContent = titles[listType];
-            
-            let members = [];
-            switch(listType) {
-                case 'main':
-                    members = appState.members.filter(m => m.status === 'main');
-                    break;
-                case 'reserve':
-                    members = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate);
-                    break;
-                case 'unavailable':
-                    members = appState.members.filter(m => m.unavailableDate);
-                    members.sort((a, b) => {
-                        const dateA = new Date(a.unavailableDate.split('-').reverse().join('-'));
-                        const dateB = new Date(b.unavailableDate.split('-').reverse().join('-'));
-                        return dateA - dateB;
-                    });
-                    break;
-                default:
-                    members = appState.members;
-            }
-            
-            const container = document.getElementById('singleListContent');
-            container.innerHTML = members.map((member, index) => {
-                const statusText = member.unavailableDate ? 
-                    `${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate}` :
-                    member.status === 'main' ? 
-                        (currentLanguage === 'ro' ? 'Listă Principală' : 'Main List') : 
-                        (currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List');
-                
-                const emoji = member.unavailableDate ? '🚫' : 
-                             member.status === 'main' ? '🏆' : '⏳';
-                
-                return `
-                    <div class="list-item flex items-center justify-between bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200">
-                        <div class="flex items-center space-x-3">
-                            <span class="position-badge text-sm font-bold text-gray-500">#${index + 1}</span>
-                            <span class="text-lg">${emoji}</span>
-                            <div>
-                                <p class="font-medium text-gray-900">${member.name}</p>
-                                <p class="text-xs text-gray-600">${statusText}</p>
-                            </div>
-                        </div>
-                        ${appState.isAdmin ? `
-                            <div class="flex items-center space-x-2">
-                                <button onclick="setUnavailable(${member.id})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-xs">
-                                    ${member.unavailableDate ? (currentLanguage === 'ro' ? 'Modifică' : 'Modify') : (currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable')}
-                                </button>
-                                <button onclick="deleteMember(${member.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs">
-                                    ${currentLanguage === 'ro' ? 'Șterge' : 'Delete'}
-                                </button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function backToThreeColumns() {
-            appState.currentView = 'threeColumns';
-            document.getElementById('threeColumnView').classList.remove('hidden');
-            document.getElementById('singleListView').classList.remove('active');
-            showAllLists();
-        }
-
-        // Authentication
-        function showLogin() {
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('adminPassword').focus();
-        }
-
+        // ---------- Auth ----------
+        function showLogin() { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('adminPassword').focus(); }
         function login() {
             const password = document.getElementById('adminPassword').value;
             if (password === '@diaspora') {
@@ -725,19 +645,19 @@
                 closeModal('loginModal');
                 showToast(currentLanguage === 'ro' ? 'Autentificare reușită!' : 'Login successful!', 'success');
                 addAuditLog('Login administrator');
+                renderAll();
             } else {
                 showToast(currentLanguage === 'ro' ? 'Parolă incorectă!' : 'Incorrect password!', 'error');
             }
             document.getElementById('adminPassword').value = '';
         }
-
         function logout() {
             appState.isAdmin = false;
             localStorage.setItem('isAdmin', 'false');
             updateLoginState();
             showToast(currentLanguage === 'ro' ? 'Ați fost delogat!' : 'You have been logged out!', 'info');
+            renderAll();
         }
-
         function updateLoginState() {
             if (appState.isAdmin) {
                 document.getElementById('adminControls').classList.remove('hidden');
@@ -752,385 +672,250 @@
             }
         }
 
-        // Dashboard functions
+        // ---------- Rendering ----------
+        function renderAll() {
+            updateDashboard();
+            updateRibbon();
+            updateSquadSizeButtons();
+            if (appState.currentView === 'threeColumns') {
+                showAllLists();
+            } else if (appState.currentView === 'singleList' && appState.currentSingleListType) {
+                showSingleList(appState.currentSingleListType);
+            }
+        }
+
         function updateDashboard() {
             const total = appState.members.length;
             const main = appState.members.filter(m => m.status === 'main').length;
-            const reserve = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate).length;
-            const unavailable = appState.members.filter(m => m.unavailableDate).length;
+            const reserve = appState.members.filter(m => m.status === 'reserve').length;
+            const unavailable = appState.members.filter(m => m.status === 'unavailable').length;
 
             document.getElementById('totalMembers').textContent = total;
-            document.getElementById('mainListCount').textContent = main;
+            document.getElementById('mainListCount').firstChild.textContent = main;
+            document.getElementById('mainListCap').textContent = '/' + appState.squadSize;
             document.getElementById('reserveListCount').textContent = reserve;
             document.getElementById('unavailableCount').textContent = unavailable;
+
+            const pct = Math.min(100, Math.round((main / appState.squadSize) * 100));
+            const bar = document.getElementById('mainCapacityBar');
+            bar.style.width = pct + '%';
+            bar.classList.toggle('over', main > appState.squadSize);
+
+            const statusDiv = document.getElementById('statusMessages');
+            const statusText = document.getElementById('statusText');
+            if (main > appState.squadSize) {
+                statusText.textContent = currentLanguage === 'ro'
+                    ? `Lista principală are ${main} jucători, peste dimensiunea setată (${appState.squadSize}). Mutați manual ${main - appState.squadSize} jucători în rezervă.`
+                    : `Main list has ${main} players, over the configured size (${appState.squadSize}). Manually move ${main - appState.squadSize} players to reserve.`;
+                statusDiv.classList.remove('hidden');
+            } else if (main < appState.squadSize) {
+                statusText.textContent = currentLanguage === 'ro'
+                    ? `Sunt ${appState.squadSize - main} locuri libere în lista principală.`
+                    : `There are ${appState.squadSize - main} free slots in the main list.`;
+                statusDiv.classList.remove('hidden');
+            } else {
+                statusDiv.classList.add('hidden');
+            }
+
+            const eligible = appState.members.filter(m => m.status !== 'unavailable');
+            const ranked = sortByGoalsDesc(eligible).filter(m => getTotalGoals(m) > 0);
+            const topScorerName = document.getElementById('topScorerName');
+            const topScorerGoals = document.getElementById('topScorerGoals');
+            if (ranked.length > 0) {
+                topScorerName.textContent = ranked[0].name;
+                topScorerGoals.textContent = `⚽ ${getTotalGoals(ranked[0])} ${currentLanguage === 'ro' ? 'goluri' : 'goals'}`;
+            } else {
+                topScorerName.textContent = '—';
+                topScorerGoals.textContent = currentLanguage === 'ro' ? 'Fără goluri încă' : 'No goals yet';
+            }
+        }
+
+        function updateRibbon() {
+            const main = appState.members.filter(m => m.status === 'main').length;
+            document.getElementById('ribbonSquad').textContent = `⚽ ${currentLanguage === 'ro' ? 'Echipă' : 'Squad'}: ${main}/${appState.squadSize}`;
+            const eligible = sortByGoalsDesc(appState.members.filter(m => m.status !== 'unavailable')).filter(m => getTotalGoals(m) > 0);
+            document.getElementById('ribbonTop').textContent = eligible.length > 0
+                ? `🏅 ${currentLanguage === 'ro' ? 'Golgheter' : 'Top scorer'}: ${eligible[0].name} (${getTotalGoals(eligible[0])}⚽)`
+                : '';
+        }
+
+        function updateSquadSizeButtons() {
+            document.getElementById('squadBtn16').classList.toggle('active', appState.squadSize === 16);
+            document.getElementById('squadBtn32').classList.toggle('active', appState.squadSize === 32);
+        }
+
+        function renderPlayerCard(member, rank) {
+            const total = getTotalGoals(member);
+            const tierClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : '';
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ('#' + rank);
+            const pillColors = member.status === 'main' ? 'bg-green-100 text-green-700' : member.status === 'unavailable' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700';
+
+            let actions = '';
+            if (appState.isAdmin) {
+                const btns = [];
+                if (member.status !== 'main') btns.push(`<button onclick="setMemberStatus(${member.id},'main')" class="bg-green-100 text-green-700 hover:bg-green-200">🏆 ${currentLanguage === 'ro' ? 'Principal' : 'Main'}</button>`);
+                if (member.status !== 'reserve') btns.push(`<button onclick="setMemberStatus(${member.id},'reserve')" class="bg-yellow-100 text-yellow-700 hover:bg-yellow-200">⏳ ${currentLanguage === 'ro' ? 'Rezervă' : 'Reserve'}</button>`);
+                if (member.status !== 'unavailable') btns.push(`<button onclick="setUnavailable(${member.id})" class="bg-red-100 text-red-700 hover:bg-red-200">🚫 ${currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable'}</button>`);
+                btns.push(`<button onclick="showGoalHistory(${member.id})" class="bg-blue-100 text-blue-700 hover:bg-blue-200">📊 ${currentLanguage === 'ro' ? 'Istoric' : 'History'}</button>`);
+                btns.push(`<button onclick="deleteMember(${member.id})" class="btn-secondary">🗑️ ${currentLanguage === 'ro' ? 'Șterge' : 'Delete'}</button>`);
+                actions = `<div class="admin-actions flex flex-wrap gap-1 mt-2">${btns.join('')}</div>`;
+            } else {
+                actions = `<div class="mt-2"><button onclick="showGoalHistory(${member.id})" class="text-xs text-blue-600 hover:underline">📊 ${currentLanguage === 'ro' ? 'Istoric goluri' : 'Goal history'}</button></div>`;
+            }
+
+            return `
+                <div class="player-card ${tierClass}">
+                    <div class="flex items-center gap-3">
+                        <span class="rank-badge">${medal}</span>
+                        <div class="avatar-circle">${escapeHtml(getInitials(member.name))}</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-gray-900 truncate">${escapeHtml(member.name)}</p>
+                            <span class="status-pill ${pillColors}">${escapeHtml(statusLabel(member))}</span>
+                        </div>
+                        <div class="goals-pill">⚽ ${total}</div>
+                    </div>
+                    ${actions}
+                </div>`;
         }
 
         function showAllLists() {
-            // Main list - include unavailable members but mark them
-            const mainMembers = appState.members.filter(m => m.status === 'main');
-            const mainContainer = document.getElementById('mainListContent');
-            
-            mainContainer.innerHTML = mainMembers.map((member, index) => `
-                <div class="list-item flex items-center justify-between bg-white rounded-lg hover:bg-gray-100 transition border border-gray-200 ${member.unavailableDate ? 'border-red-300 bg-red-50' : ''}">
-                    <div class="flex items-center space-x-3">
-                        <span class="position-badge text-sm font-bold text-gray-500">#${index + 1}</span>
-                        <span class="text-lg">🏆</span>
-                        <div>
-                            <p class="font-medium text-gray-900">${member.name}</p>
-                            <p class="text-xs text-gray-600">
-                                ${currentLanguage === 'ro' ? 'Listă Principală' : 'Main List'}
-                                ${member.unavailableDate ? `<span class="unavailable-badge">${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate}</span>` : ''}
-                            </p>
-                        </div>
-                    </div>
-                    ${appState.isAdmin ? `
-                        <div class="flex items-center space-x-2">
-                            <button onclick="setUnavailable(${member.id})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-xs">
-                                ${member.unavailableDate ? (currentLanguage === 'ro' ? 'Modifică' : 'Modify') : (currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable')}
-                            </button>
-                            <button onclick="deleteMember(${member.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs">
-                                ${currentLanguage === 'ro' ? 'Șterge' : 'Delete'}
-                            </button>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
+            const mainMembers = sortByGoalsDesc(appState.members.filter(m => m.status === 'main'));
+            document.getElementById('mainListContent').innerHTML = mainMembers.map((m, i) => renderPlayerCard(m, i + 1)).join('') || emptyState();
+            document.getElementById('mainColCount').textContent = `(${mainMembers.length}/${appState.squadSize})`;
 
-            // Reserve list - sort by addedDate to maintain FIFO
-            const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
-                .sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
-            const reserveContainer = document.getElementById('reserveListContent');
-            
-            reserveContainer.innerHTML = reserveMembers.map((member, index) => `
-                <div class="list-item flex items-center justify-between bg-white rounded-lg hover:bg-gray-100 transition border border-gray-200">
-                    <div class="flex items-center space-x-3">
-                        <span class="position-badge text-sm font-bold text-gray-500">#${index + 1}</span>
-                        <span class="text-lg">⏳</span>
-                        <div>
-                            <p class="font-medium text-gray-900">${member.name}</p>
-                            <p class="text-xs text-gray-600">${currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List'}</p>
-                        </div>
-                    </div>
-                    ${appState.isAdmin ? `
-                        <div class="flex items-center space-x-2">
-                            <button onclick="setUnavailable(${member.id})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-xs">
-                                ${currentLanguage === 'ro' ? 'Indisponibil' : 'Unavailable'}
-                            </button>
-                            <button onclick="deleteMember(${member.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs">
-                                ${currentLanguage === 'ro' ? 'Șterge' : 'Delete'}
-                            </button>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
+            const reserveMembers = sortByGoalsDesc(appState.members.filter(m => m.status === 'reserve'));
+            document.getElementById('reserveListContent').innerHTML = reserveMembers.map((m, i) => renderPlayerCard(m, i + 1)).join('') || emptyState();
+            document.getElementById('reserveColCount').textContent = `(${reserveMembers.length})`;
 
-            // Unavailable list
-            const unavailableMembers = appState.members.filter(m => m.unavailableDate);
-            unavailableMembers.sort((a, b) => {
+            const unavailableMembers = [...appState.members.filter(m => m.status === 'unavailable')].sort((a, b) => {
                 const dateA = new Date(a.unavailableDate.split('-').reverse().join('-'));
                 const dateB = new Date(b.unavailableDate.split('-').reverse().join('-'));
                 return dateA - dateB;
             });
-            const unavailableContainer = document.getElementById('unavailableListContent');
-            
-            unavailableContainer.innerHTML = unavailableMembers.map((member, index) => `
-                <div class="list-item flex items-center justify-between bg-white rounded-lg hover:bg-gray-100 transition border border-gray-200">
-                    <div class="flex items-center space-x-3">
-                        <span class="position-badge text-sm font-bold text-gray-500">#${index + 1}</span>
-                        <span class="text-lg">🚫</span>
-                        <div>
-                            <p class="font-medium text-gray-900">${member.name}</p>
-                            <p class="text-xs text-gray-600">${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate}</p>
-                        </div>
-                    </div>
-                    ${appState.isAdmin ? `
-                        <div class="flex items-center space-x-2">
-                            <button onclick="setUnavailable(${member.id})" class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-xs">
-                                ${currentLanguage === 'ro' ? 'Modifică' : 'Modify'}
-                            </button>
-                            <button onclick="deleteMember(${member.id})" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition text-xs">
-                                ${currentLanguage === 'ro' ? 'Șterge' : 'Delete'}
-                            </button>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
+            document.getElementById('unavailableListContent').innerHTML = unavailableMembers.map((m, i) => renderPlayerCard(m, i + 1)).join('') || emptyState();
+            document.getElementById('unavailableColCount').textContent = `(${unavailableMembers.length})`;
         }
 
-        // Unlock Daily List
-        function showUnlockModal() {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
-            }
-            document.getElementById('unlockModal').classList.remove('hidden');
+        function emptyState() {
+            return `<p class="text-sm text-gray-400 text-center py-6">${currentLanguage === 'ro' ? 'Nicio persoană în această listă.' : 'No one in this list.'}</p>`;
         }
 
-        function unlockDailyList() {
-            const password = document.getElementById('unlockPassword').value;
-            if (password !== 'BriSo') {
-                showToast(currentLanguage === 'ro' ? 'Parolă incorectă!' : 'Incorrect password!', 'error');
-                return;
-            }
-            
-            appState.dailyList = null;
-            saveToFirebase();
-            closeModal('unlockModal');
-            showToast(currentLanguage === 'ro' ? 'Lista a fost deblocată cu succes!' : 'List unlocked successfully!', 'success');
-            addAuditLog(currentLanguage === 'ro' ? 'Deblocare listă zilnică' : 'Unlock daily list');
-            checkDailyListStatus();
-            
-            document.getElementById('unlockPassword').value = '';
-        }
+        function showSingleList(listType) {
+            appState.currentView = 'singleList';
+            appState.currentSingleListType = listType;
+            document.getElementById('threeColumnView').classList.add('hidden');
+            document.getElementById('singleListView').classList.add('active');
 
-        // Daily List Generation
-        function generateDailyList() {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
-            }
-
-            const today = new Date().toDateString();
-            if (appState.dailyList && appState.dailyList.date === today) {
-                showToast(currentLanguage === 'ro' ? 'Lista pentru această zi a fost deja generată!' : 'List for today has already been generated!', 'warning');
-                return;
-            }
-
-            const currentMain = appState.members.filter(m => m.status === 'main');
-            const container = document.getElementById('currentListForReplace');
-            
-            container.innerHTML = currentMain.map(member => `
-                <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                    <input type="checkbox" value="${member.id}" onchange="updateSelectedCount()" class="w-4 h-4 text-blue-600">
-                    <span>${member.name}</span>
-                </label>
-            `).join('');
-
-            document.getElementById('generateListModal').classList.remove('hidden');
-        }
-
-        function updateSelectedCount() {
-            const checkboxes = document.querySelectorAll('#currentListForReplace input[type="checkbox"]:checked');
-            document.getElementById('selectedCount').textContent = checkboxes.length;
-            
-            // Limit selection to 5 checkboxes
-            if (checkboxes.length > 5) {
-                // Uncheck the last checked box
-                const lastChecked = checkboxes[checkboxes.length - 1];
-                lastChecked.checked = false;
-                document.getElementById('selectedCount').textContent = checkboxes.length - 1;
-                showToast(currentLanguage === 'ro' ? 'Puteți selecta maximum 5 jucători!' : 'You can select a maximum of 5 players!', 'warning');
-            }
-        }
-
-        function showConfirmationModal() {
-            const checkboxes = document.querySelectorAll('#currentListForReplace input[type="checkbox"]:checked');
-            
-            if (checkboxes.length !== 5) {
-                showToast(currentLanguage === 'ro' ? 'Trebuie să selectați exact 5 jucători!' : 'You must select exactly 5 players!', 'error');
-                return;
-            }
-
-            const selectedIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-            const selectedMembers = appState.members.filter(m => selectedIds.includes(m.id));
-            
-            // Get first 5 from reserve (FIFO order)
-            const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
-                .sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
-            const toPromote = reserveMembers.slice(0, 5);
-            
-            // Display confirmation
-            document.getElementById('playersToReplace').innerHTML = selectedMembers.map(m => `• ${m.name}`).join('<br>');
-            document.getElementById('playersToPromote').innerHTML = toPromote.length > 0 ? 
-                toPromote.map(m => `• ${m.name}`).join('<br>') : (currentLanguage === 'ro' ? 'Nu există suficienți jucători în rezerve' : 'Not enough players in reserves');
-            
-            appState.selectedForReplace = selectedIds;
-            
-            document.getElementById('confirmationModal').classList.remove('hidden');
-        }
-
-        function backToSelection() {
-            document.getElementById('confirmationModal').classList.add('hidden');
-        }
-
-        function confirmGenerateList() {
-            const selectedMembers = appState.members.filter(m => appState.selectedForReplace.includes(m.id));
-            
-            // Move selected to reserve queue (end of the line - update addedDate)
-            selectedMembers.forEach(member => {
-                member.status = 'reserve';
-                member.addedDate = new Date().toISOString(); // Set to now to put at end of queue
-            });
-
-            // Get first 5 from reserve (FIFO order)
-            const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
-                .sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
-            const toPromote = reserveMembers.slice(0, 5);
-            
-            // Promote first 5 from reserves
-            toPromote.forEach(member => {
-                member.status = 'main';
-            });
-
-            // Save daily list snapshot
-            const today = new Date().toDateString();
-            const mainList = appState.members.filter(m => m.status === 'main');
-            
-            appState.dailyList = {
-                date: today,
-                list: mainList.map(m => m.name),
-                replaced: selectedMembers.map(m => m.name),
-                promoted: toPromote.map(m => m.name),
-                generatedAt: new Date().toISOString()
+            const titles = {
+                all: currentLanguage === 'ro' ? 'Toți Membrii' : 'All Members',
+                main: currentLanguage === 'ro' ? 'Listă Principală' : 'Main List',
+                reserve: currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List',
+                unavailable: currentLanguage === 'ro' ? 'Indisponibili' : 'Unavailable'
             };
+            document.getElementById('singleListTitle').textContent = titles[listType];
 
-            // Add to history
-            appState.history.unshift({...appState.dailyList});
-            if (appState.history.length > 30) appState.history.pop();
+            let members = [];
+            if (listType === 'main') members = sortByGoalsDesc(appState.members.filter(m => m.status === 'main'));
+            else if (listType === 'reserve') members = sortByGoalsDesc(appState.members.filter(m => m.status === 'reserve'));
+            else if (listType === 'unavailable') {
+                members = [...appState.members.filter(m => m.status === 'unavailable')].sort((a, b) => {
+                    const dateA = new Date(a.unavailableDate.split('-').reverse().join('-'));
+                    const dateB = new Date(b.unavailableDate.split('-').reverse().join('-'));
+                    return dateA - dateB;
+                });
+            } else members = sortByGoalsDesc(appState.members);
 
+            document.getElementById('singleListContent').innerHTML = members.map((m, i) => renderPlayerCard(m, i + 1)).join('') || emptyState();
+        }
+
+        function backToThreeColumns() {
+            appState.currentView = 'threeColumns';
+            document.getElementById('threeColumnView').classList.remove('hidden');
+            document.getElementById('singleListView').classList.remove('active');
+            showAllLists();
+        }
+
+        // ---------- Squad size ----------
+        function setSquadSize(size) {
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
+            if (appState.squadSize === size) return;
+            appState.squadSize = size;
             saveToFirebase();
-            closeModal('confirmationModal');
-            closeModal('generateListModal');
-            showToast(currentLanguage === 'ro' ? 'Lista zilnică a fost generată cu succes!' : 'Daily list generated successfully!', 'success');
-            addAuditLog(currentLanguage === 'ro' ? 'Generare listă zilnică' : 'Generate daily list');
-            updateDashboard();
-            if (appState.currentView === 'threeColumns') {
-                showAllLists();
-            }
-            checkDailyListStatus();
-            
-            // Reset selected for replace
-            appState.selectedForReplace = [];
+            updateDashboard(); updateRibbon(); updateSquadSizeButtons();
+            if (appState.currentView === 'threeColumns') showAllLists(); else if (appState.currentSingleListType) showSingleList(appState.currentSingleListType);
+            showToast(currentLanguage === 'ro' ? `Dimensiune echipă setată la ${size}!` : `Squad size set to ${size}!`, 'success');
+            addAuditLog(`${currentLanguage === 'ro' ? 'Dimensiune echipă schimbată la' : 'Squad size changed to'} ${size}`);
         }
 
-        function checkDailyListStatus() {
-            const today = new Date().toDateString();
-            const statusDiv = document.getElementById('statusMessages');
-            const statusText = document.getElementById('statusText');
-            
-            if (appState.dailyList && appState.dailyList.date === today) {
-                const time = new Date(appState.dailyList.generatedAt).toLocaleTimeString('ro-RO');
-                const message = currentLanguage === 'ro' ? 
-                    `Lista pentru data de azi a fost generată la ora ${time}. Lista este blocată pentru astăzi.` :
-                    `List for today was generated at ${time}. List is locked for today.`;
-                statusText.textContent = message;
-                statusDiv.classList.remove('hidden');
-                
-                // Show next 5 reserves
-                const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
-                    .sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
-                const nextReserves = reserveMembers.slice(0, 5);
-                if (nextReserves.length > 0) {
-                    const nextNames = nextReserves.map(r => r.name).join(', ');
-                    const nextMessage = currentLanguage === 'ro' ? 
-                        ` Următorii 5 jucători care vor intra din rezerve sunt: ${nextNames}` :
-                        ` Next 5 players who will enter from reserves: ${nextNames}`;
-                    statusText.textContent += nextMessage;
-                }
-            } else {
-                statusDiv.classList.add('hidden');
-            }
-        }
-
-        // Member Management
+        // ---------- Member management ----------
         function showAddMemberModal() {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
-            }
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
             document.getElementById('addMemberModal').classList.remove('hidden');
         }
 
         function addMember() {
             const name = document.getElementById('newMemberName').value.trim();
-            const unavailableDate = document.getElementById('newMemberUnavailableDate').value.trim();
-            
-            if (!name) {
-                showToast(currentLanguage === 'ro' ? 'Introduceți numele membrului!' : 'Enter member name!', 'error');
-                return;
+            const status = document.getElementById('newMemberStatus').value;
+            if (!name) { showToast(currentLanguage === 'ro' ? 'Introduceți numele membrului!' : 'Enter member name!', 'error'); return; }
+
+            const mainCount = appState.members.filter(m => m.status === 'main').length;
+            if (status === 'main' && mainCount >= appState.squadSize) {
+                showToast(currentLanguage === 'ro' ? 'Lista principală este completă! Membrul va fi adăugat în rezervă.' : 'Main list is full! Member will be added to reserve.', 'warning');
             }
 
             const newMember = {
-                id: Date.now(),
-                name: name,
-                status: unavailableDate ? 'reserve' : 'reserve',
-                unavailableDate: unavailableDate || null,
-                addedDate: new Date().toISOString() // Always set to now for FIFO
+                id: Date.now(), name: name,
+                status: (status === 'main' && mainCount < appState.squadSize) ? 'main' : 'reserve',
+                unavailableDate: null, addedDate: new Date().toISOString(), goals: {}
             };
-
             appState.members.push(newMember);
-            
-            if (!unavailableDate) {
-                // Check if main list needs filling
-                const mainCount = appState.members.filter(m => m.status === 'main').length;
-                if (mainCount < 32) {
-                    const availableReserves = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate);
-                    if (availableReserves.length > 0) {
-                        // Get the oldest reserve to promote
-                        const oldestReserve = availableReserves.sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate))[0];
-                        oldestReserve.status = 'main';
-                    }
-                }
-            }
-
             saveToFirebase();
             closeModal('addMemberModal');
             showToast(currentLanguage === 'ro' ? 'Membru a fost adăugat cu succes!' : 'Member added successfully!', 'success');
             addAuditLog(`${currentLanguage === 'ro' ? 'Adăugare membru:' : 'Add member:'} ${name}`);
-            updateDashboard();
-            if (appState.currentView === 'threeColumns') {
-                showAllLists();
-            }
-            
+            renderAll();
             document.getElementById('newMemberName').value = '';
-            document.getElementById('newMemberUnavailableDate').value = '';
         }
 
         function deleteMember(id) {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
-            }
-
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
             const member = appState.members.find(m => m.id === id);
             if (!member) return;
-
-            const confirmMessage = currentLanguage === 'ro' ? 
-                `Sigur doriți să ștergeți membrul "${member.name}"?` :
-                `Are you sure you want to delete member "${member.name}"?`;
-
+            const confirmMessage = currentLanguage === 'ro' ? `Sigur doriți să ștergeți membrul "${member.name}"?` : `Are you sure you want to delete member "${member.name}"?`;
             if (confirm(confirmMessage)) {
                 appState.members = appState.members.filter(m => m.id !== id);
-                
-                // Fill main list if needed
-                const mainCount = appState.members.filter(m => m.status === 'main').length;
-                if (mainCount < 32) {
-                    const reserves = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate);
-                    const oldestReserves = reserves.sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
-                    for (let i = 0; i < Math.min(32 - mainCount, oldestReserves.length); i++) {
-                        oldestReserves[i].status = 'main';
-                    }
-                }
-
                 saveToFirebase();
                 showToast(currentLanguage === 'ro' ? 'Membru a fost șters cu succes!' : 'Member deleted successfully!', 'success');
                 addAuditLog(`${currentLanguage === 'ro' ? 'Ștergere membru:' : 'Delete member:'} ${member.name}`);
-                updateDashboard();
-                if (appState.currentView === 'threeColumns') {
-                    showAllLists();
-                }
+                renderAll();
             }
         }
 
-        function setUnavailable(id) {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
-            }
-
+        function setMemberStatus(id, newStatus) {
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
             const member = appState.members.find(m => m.id === id);
             if (!member) return;
 
+            if (newStatus === 'main') {
+                const mainCount = appState.members.filter(m => m.status === 'main').length;
+                if (mainCount >= appState.squadSize) {
+                    showToast(currentLanguage === 'ro' ? `Lista principală este completă (${mainCount}/${appState.squadSize})! Mutați mai întâi un jucător în rezervă.` : `Main list is full (${mainCount}/${appState.squadSize})! Move a player to reserve first.`, 'error');
+                    return;
+                }
+            }
+
+            member.status = newStatus;
+            member.unavailableDate = null;
+            saveToFirebase();
+            showToast(currentLanguage === 'ro' ? `${member.name} a fost mutat cu succes!` : `${member.name} was moved successfully!`, 'success');
+            addAuditLog(`${currentLanguage === 'ro' ? 'Schimbare listă:' : 'List change:'} ${member.name} → ${statusLabel(member)}`);
+            renderAll();
+        }
+
+        function setUnavailable(id) {
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
+            const member = appState.members.find(m => m.id === id);
+            if (!member) return;
             appState.currentUnavailableMember = member;
             document.getElementById('unavailableMemberName').textContent = `${currentLanguage === 'ro' ? 'Membru:' : 'Member:'} ${member.name}`;
             document.getElementById('unavailableDateInput').value = member.unavailableDate || '';
@@ -1139,411 +924,414 @@
 
         function confirmSetUnavailable() {
             const date = document.getElementById('unavailableDateInput').value.trim();
-            
-            if (date && !isValidDate(date)) {
+            if (!date || !isValidDate(date)) {
                 showToast(currentLanguage === 'ro' ? 'Format dată invalid! Folosiți ZZ-LL-AAAA' : 'Invalid date format! Use DD-MM-YYYY', 'error');
                 return;
             }
-
             const member = appState.currentUnavailableMember;
-            const oldDate = member.unavailableDate;
-            
-            member.unavailableDate = date || null;
-            
-            // FIX: Don't move member from main list immediately when setting unavailable date
-            // Keep them in main list but mark as unavailable until daily list generation
-            if (member.status === 'reserve' && !date) {
-                // Check if can be promoted to main
-                const mainCount = appState.members.filter(m => m.status === 'main').length;
-                if (mainCount < 32) {
-                    member.status = 'main';
-                }
-            }
-
+            member.status = 'unavailable';
+            member.unavailableDate = date;
             saveToFirebase();
             closeModal('setUnavailableModal');
-            const message = currentLanguage === 'ro' ? 
-                `Indisponibilitate ${date ? 'setată' : 'ștearsă'} pentru ${member.name}!` :
-                `Unavailability ${date ? 'set' : 'cleared'} for ${member.name}!`;
-            showToast(message, 'success');
-            addAuditLog(`${currentLanguage === 'ro' ? 'Modificare indisponibilitate:' : 'Modify unavailability:'} ${member.name} - ${date || (currentLanguage === 'ro' ? 'disponibil' : 'available')}`);
-            updateDashboard();
-            if (appState.currentView === 'threeColumns') {
-                showAllLists();
-            }
-        }
-
-        function clearUnavailable() {
-            document.getElementById('unavailableDateInput').value = '';
-            confirmSetUnavailable();
+            showToast(currentLanguage === 'ro' ? `Indisponibilitate setată pentru ${member.name}!` : `Unavailability set for ${member.name}!`, 'success');
+            addAuditLog(`${currentLanguage === 'ro' ? 'Indisponibil:' : 'Unavailable:'} ${member.name} → ${date}`);
+            renderAll();
         }
 
         function isValidDate(dateString) {
             const regex = /^(\d{2})-(\d{2})-(\d{4})$/;
             if (!regex.test(dateString)) return false;
-            
-            const parts = dateString.split('-');
-            const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10);
-            const year = parseInt(parts[2], 10);
-            
-            const date = new Date(year, month - 1, day);
-            return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+            const [dd, mm, yyyy] = dateString.split('-').map(Number);
+            const date = new Date(yyyy, mm - 1, dd);
+            return date.getFullYear() === yyyy && date.getMonth() === mm - 1 && date.getDate() === dd;
         }
 
         function checkUnavailableDates() {
             const today = new Date();
             let hasChanges = false;
-
             appState.members.forEach(member => {
-                if (member.unavailableDate) {
-                    const parts = member.unavailableDate.split('-');
-                    const unavailableDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (member.status === 'unavailable' && member.unavailableDate) {
+                    const [dd, mm, yyyy] = member.unavailableDate.split('-');
+                    const unavailableDate = new Date(yyyy, mm - 1, dd);
                     if (unavailableDate <= today) {
                         member.unavailableDate = null;
                         member.status = 'reserve';
-                        member.addedDate = new Date().toISOString(); // Put at end of reserve queue
                         hasChanges = true;
                     }
                 }
             });
-
-            if (hasChanges) {
-                saveToFirebase();
-                updateDashboard();
-                if (appState.currentView === 'threeColumns') {
-                    showAllLists();
-                }
-            }
+            if (hasChanges) { saveToFirebase(); renderAll(); }
         }
 
-        // Bulk Upload
+        // ---------- Bulk upload ----------
         function showBulkUploadModal() {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
-            }
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
             document.getElementById('bulkUploadModal').classList.remove('hidden');
         }
 
         function processBulkUpload() {
-            const password = document.getElementById('bulkPassword').value;
-            if (password !== 'BriSo') {
-                showToast(currentLanguage === 'ro' ? 'Parolă incorectă!' : 'Incorrect password!', 'error');
-                return;
-            }
-
             const data = document.getElementById('bulkData').value.trim();
-            if (!data) {
-                showToast(currentLanguage === 'ro' ? 'Introduceți datele!' : 'Enter data!', 'error');
-                return;
-            }
-
-            const confirmMessage = currentLanguage === 'ro' ? 
-                'ATENȚIE: Toți membrii existenți vor fi șterși! Continuați?' :
-                'WARNING: All existing members will be deleted! Continue?';
-
-            if (!confirm(confirmMessage)) {
-                return;
-            }
+            if (!data) { showToast(currentLanguage === 'ro' ? 'Introduceți datele!' : 'Enter data!', 'error'); return; }
+            const confirmMessage = currentLanguage === 'ro' ? 'ATENȚIE: Toți membrii existenți vor fi șterși! Continuați?' : 'WARNING: All existing members will be deleted! Continue?';
+            if (!confirm(confirmMessage)) return;
 
             const names = data.split('\n').map(n => n.trim()).filter(n => n);
-            
-            // Clear all existing members
-            appState.members = [];
-            
-            // Add new members
-            names.forEach((name, index) => {
-                const newMember = {
-                    id: Date.now() + index,
-                    name: name,
-                    status: index < 32 ? 'main' : 'reserve',
-                    unavailableDate: null,
-                    addedDate: new Date().toISOString() // Set added date for FIFO
-                };
-
-                appState.members.push(newMember);
-            });
-
+            appState.members = names.map((name, index) => ({
+                id: Date.now() + index, name: name,
+                status: index < appState.squadSize ? 'main' : 'reserve',
+                unavailableDate: null, addedDate: new Date().toISOString(), goals: {}
+            }));
             saveToFirebase();
             closeModal('bulkUploadModal');
-            const message = currentLanguage === 'ro' ? 
-                `${names.length} membri au fost încărcați cu succes! Lista a fost reinițializată.` :
-                `${names.length} members uploaded successfully! List has been reset.`;
+            const message = currentLanguage === 'ro' ? `${names.length} membri au fost încărcați cu succes! Lista a fost reinițializată.` : `${names.length} members uploaded successfully! List has been reset.`;
             showToast(message, 'success');
-            addAuditLog(`${currentLanguage === 'ro' ? 'Încărcare bulk:' : 'Bulk upload:'} ${names.length} ${currentLanguage === 'ro' ? 'membri (listă reinițializată)' : 'members (list reset)'}`);
-            updateDashboard();
-            if (appState.currentView === 'threeColumns') {
-                showAllLists();
-            }
-            
-            document.getElementById('bulkPassword').value = '';
+            addAuditLog(`${currentLanguage === 'ro' ? 'Încărcare bulk:' : 'Bulk upload:'} ${names.length} ${currentLanguage === 'ro' ? 'membri' : 'members'}`);
+            renderAll();
             document.getElementById('bulkData').value = '';
         }
 
-        // History
-        function showHistory() {
-            const container = document.getElementById('historyContent');
-            
-            if (appState.history.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 text-center py-8">${currentLanguage === 'ro' ? 'Nu există date în istoric.' : 'No data in history.'}</p>`;
-            } else {
-                container.innerHTML = appState.history.map((item, index) => `
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-semibold text-gray-900">
-                                ${new Date(item.date).toLocaleDateString('ro-RO')}
-                            </h4>
-                            <span class="text-sm text-gray-600">
-                                ${new Date(item.generatedAt).toLocaleTimeString('ro-RO')}
-                            </span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <p class="text-sm font-medium text-gray-700 mb-1">${currentLanguage === 'ro' ? 'Lista Principală:' : 'Main List:'}</p>
-                                <p class="text-sm text-gray-600">${item.list.join(', ')}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-700 mb-1">${currentLanguage === 'ro' ? 'Înlocuiți:' : 'Replaced:'}</p>
-                                <p class="text-sm text-gray-600">${item.replaced.join(', ')}</p>
-                            </div>
-                            ${item.promoted ? `
-                            <div>
-                                <p class="text-sm font-medium text-gray-700 mb-1">${currentLanguage === 'ro' ? 'Promovați:' : 'Promoted:'}</p>
-                                <p class="text-sm text-gray-600">${item.promoted.join(', ')}</p>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            document.getElementById('historyModal').classList.remove('hidden');
+        // ---------- Daily goals ----------
+        function showDailyGoalsModal() {
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
+            if (!document.getElementById('dailyGoalsDate').value) document.getElementById('dailyGoalsDate').value = todayISO();
+            renderDailyGoalsList();
+            document.getElementById('dailyGoalsModal').classList.remove('hidden');
         }
 
-        // Audit Log
-        function showAuditLog() {
-            if (!appState.isAdmin) {
-                showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error');
-                return;
+        function renderDailyGoalsList() {
+            const dateKey = document.getElementById('dailyGoalsDate').value;
+            const eligible = appState.members.filter(m => m.status !== 'unavailable');
+            const mainMembers = eligible.filter(m => m.status === 'main').sort((a, b) => a.name.localeCompare(b.name));
+            const reserveMembers = eligible.filter(m => m.status === 'reserve').sort((a, b) => a.name.localeCompare(b.name));
+
+            function row(m) {
+                const existing = dateKey && m.goals && (dateKey in m.goals) ? m.goals[dateKey] : '';
+                return `
+                    <div class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-gray-100" data-member-id="${m.id}">
+                        <span class="text-sm font-medium text-gray-900">${escapeHtml(m.name)}</span>
+                        <input type="number" min="0" placeholder="0" value="${existing}" class="w-20 px-2 py-1 border border-gray-300 rounded text-center">
+                    </div>`;
             }
 
+            let html = '';
+            if (mainMembers.length) html += `<p class="text-xs font-semibold text-green-700 uppercase mt-2 mb-1">${currentLanguage === 'ro' ? 'Listă Principală' : 'Main List'}</p>` + mainMembers.map(row).join('');
+            if (reserveMembers.length) html += `<p class="text-xs font-semibold text-yellow-700 uppercase mt-4 mb-1">${currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List'}</p>` + reserveMembers.map(row).join('');
+            document.getElementById('dailyGoalsContent').innerHTML = html || emptyState();
+        }
+
+        function saveDailyGoals() {
+            const dateKey = document.getElementById('dailyGoalsDate').value;
+            if (!dateKey) { showToast(currentLanguage === 'ro' ? 'Selectați o dată!' : 'Select a date!', 'error'); return; }
+
+            const rows = document.querySelectorAll('#dailyGoalsContent [data-member-id]');
+            let count = 0;
+            rows.forEach(row => {
+                const id = parseInt(row.dataset.memberId, 10);
+                const input = row.querySelector('input');
+                const val = input.value.trim();
+                const member = appState.members.find(m => m.id === id);
+                if (!member) return;
+                member.goals = member.goals || {};
+                if (val === '') {
+                    if (dateKey in member.goals) { delete member.goals[dateKey]; count++; }
+                } else {
+                    member.goals[dateKey] = Math.max(0, parseInt(val, 10) || 0);
+                    count++;
+                }
+            });
+
+            saveToFirebase();
+            closeModal('dailyGoalsModal');
+            showToast(currentLanguage === 'ro' ? 'Golurile au fost salvate cu succes!' : 'Goals saved successfully!', 'success');
+            addAuditLog(`${currentLanguage === 'ro' ? 'Actualizare goluri pentru' : 'Goals updated for'} ${formatDateDisplay(dateKey)} (${count})`);
+            renderAll();
+        }
+
+        // ---------- Goal history ----------
+        function showGoalHistory(id) {
+            const member = appState.members.find(m => m.id === id);
+            if (!member) return;
+            appState.currentGoalHistoryMemberId = id;
+            document.getElementById('goalHistoryPlayerName').textContent = member.name;
+            renderGoalHistoryContent();
+            document.getElementById('goalHistoryModal').classList.remove('hidden');
+        }
+
+        function renderGoalHistoryContent() {
+            const member = appState.members.find(m => m.id === appState.currentGoalHistoryMemberId);
+            if (!member) return;
+            const entries = Object.entries(member.goals || {}).sort((a, b) => b[0].localeCompare(a[0]));
+            const total = entries.reduce((sum, [, g]) => sum + (parseInt(g) || 0), 0);
+            const avg = entries.length ? (total / entries.length).toFixed(1) : '0.0';
+
+            let html = `<div class="flex justify-between text-sm font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2">
+                <span>${currentLanguage === 'ro' ? 'Total' : 'Total'}: ⚽ ${total}</span>
+                <span>${currentLanguage === 'ro' ? 'Medie' : 'Average'}: ${avg}</span>
+            </div>`;
+
+            if (entries.length === 0) {
+                html += `<p class="text-sm text-gray-400 text-center py-4">${currentLanguage === 'ro' ? 'Nu există goluri înregistrate.' : 'No goals recorded.'}</p>`;
+            } else {
+                html += entries.map(([date, g]) => `
+                    <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
+                        <span class="text-sm text-gray-700">${formatDateDisplay(date)}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="goals-pill">⚽ ${g}</span>
+                            ${appState.isAdmin ? `<button onclick="deleteGoalEntry('${date}')" class="text-red-500 hover:text-red-700 text-xs">✕</button>` : ''}
+                        </div>
+                    </div>`).join('');
+            }
+            document.getElementById('goalHistoryContent').innerHTML = html;
+        }
+
+        function deleteGoalEntry(dateKey) {
+            const member = appState.members.find(m => m.id === appState.currentGoalHistoryMemberId);
+            if (!member || !member.goals) return;
+            delete member.goals[dateKey];
+            saveToFirebase();
+            renderGoalHistoryContent();
+            renderAll();
+            addAuditLog(`${currentLanguage === 'ro' ? 'Ștergere gol înregistrat:' : 'Removed goal entry:'} ${member.name} - ${formatDateDisplay(dateKey)}`);
+        }
+
+        // ---------- Goals history by date (global) ----------
+        function getAllGoalDates() {
+            const set = new Set();
+            appState.members.forEach(m => { if (m.goals) Object.keys(m.goals).forEach(d => set.add(d)); });
+            return Array.from(set).sort((a, b) => b.localeCompare(a));
+        }
+
+        function showGoalsHistoryModal() {
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
+            const dates = getAllGoalDates();
+            const select = document.getElementById('goalsHistoryDateSelect');
+            if (dates.length === 0) {
+                select.innerHTML = '';
+                select.classList.add('hidden');
+                document.getElementById('goalsHistoryContent').innerHTML = `<p class="text-sm text-gray-400 text-center py-8">${currentLanguage === 'ro' ? translations.ro.noHistoryDates : translations.en.noHistoryDates}</p>`;
+            } else {
+                select.classList.remove('hidden');
+                select.innerHTML = dates.map(d => `<option value="${d}">${formatDateDisplay(d)}</option>`).join('');
+                renderGoalsHistoryForDate();
+            }
+            document.getElementById('goalsHistoryModal').classList.remove('hidden');
+        }
+
+        function renderGoalsHistoryForDate() {
+            const dateKey = document.getElementById('goalsHistoryDateSelect').value;
+            if (!dateKey) return;
+            const rows = appState.members
+                .filter(m => m.goals && (dateKey in m.goals))
+                .sort((a, b) => (parseInt(b.goals[dateKey]) || 0) - (parseInt(a.goals[dateKey]) || 0) || a.name.localeCompare(b.name));
+
+            const total = rows.reduce((sum, m) => sum + (parseInt(m.goals[dateKey]) || 0), 0);
+            let html = `<div class="flex justify-between text-sm font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2">
+                <span>${currentLanguage === 'ro' ? 'Jucători cu goluri' : 'Players with goals'}: ${rows.length}</span>
+                <span>${currentLanguage === 'ro' ? translations.ro.totalForDate : translations.en.totalForDate}: ⚽ ${total}</span>
+            </div>`;
+
+            if (rows.length === 0) {
+                html += `<p class="text-sm text-gray-400 text-center py-4">${currentLanguage === 'ro' ? 'Niciun jucător nu are goluri înregistrate la această dată.' : 'No player has goals recorded on this date.'}</p>`;
+            } else {
+                html += rows.map(m => `
+                    <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-medium text-gray-900">${escapeHtml(m.name)}</span>
+                        <span class="goals-pill">⚽ ${m.goals[dateKey]}</span>
+                    </div>`).join('');
+            }
+            document.getElementById('goalsHistoryContent').innerHTML = html;
+        }
+
+        // ---------- Screenshot ----------
+        function showScreenshotModal() {
+            renderScreenshotTemplate();
+            document.getElementById('screenshotModal').classList.remove('hidden');
+        }
+
+        function renderScreenshotTemplate() {
+            const ranked = sortByGoalsDesc(appState.members.filter(m => m.status === 'main'));
+            const half = Math.ceil(ranked.length / 2);
+            const col1 = ranked.slice(0, half);
+            const col2 = ranked.slice(half);
+
+            function medal(rank) { return rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ('#' + rank); }
+
+            function rowHtml(m, rank, altIndex) {
+                return `<div class="ss-row ${altIndex % 2 === 1 ? 'alt' : ''}">
+                    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                        <span style="min-width:28px;font-weight:800;color:#facc15;font-size:13px;">${medal(rank)}</span>
+                        <span style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${escapeHtml(m.name)}</span>
+                    </div>
+                    <span style="font-weight:800;font-size:14px;color:#34d399;">${getTotalGoals(m)} ⚽</span>
+                </div>`;
+            }
+
+            const col1Html = col1.map((m, i) => rowHtml(m, i + 1, i)).join('');
+            const col2Html = col2.map((m, i) => rowHtml(m, half + i + 1, i)).join('');
+
+            const totalGoals = ranked.reduce((s, m) => s + getTotalGoals(m), 0);
+            const dateStr = new Date().toLocaleDateString(currentLanguage === 'ro' ? 'ro-RO' : 'en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            document.getElementById('screenshotTemplate').innerHTML = `
+                <div style="border-bottom:2px solid #059669;padding-bottom:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
+                    <div>
+                        <div style="font-size:22px;font-weight:800;letter-spacing:.5px;color:#f1f5f9;">DIASPORA ROMÂNĂ</div>
+                        <div style="font-size:13px;color:#34d399;font-weight:600;letter-spacing:1px;">LISTĂ PRINCIPALĂ OFICIALĂ</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:12px;color:#94a3b8;">${dateStr}</div>
+                        <div style="display:inline-block;margin-top:4px;background:#059669;color:white;font-weight:700;font-size:12px;padding:3px 10px;border-radius:9999px;">${ranked.length} JUCĂTORI</div>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                    <div>${col1Html}</div>
+                    <div>${col2Html}</div>
+                </div>
+                <div style="border-top:1px solid #263858;margin-top:16px;padding-top:12px;display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;">
+                    <span>${currentLanguage === 'ro' ? 'Total goluri echipă' : 'Total team goals'}: <b style="color:#e5e7eb;">${totalGoals} ⚽</b></span>
+                    <span>Diaspora Română Tournament</span>
+                </div>`;
+        }
+
+        function downloadScreenshot() {
+            const el = document.getElementById('screenshotTemplate');
+            const btn = document.getElementById('screenshotDownloadBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = currentLanguage === 'ro' ? 'Se generează...' : 'Generating...';
+            html2canvas(el, { scale: 2, backgroundColor: '#0b1220' }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `lista-principala-${todayISO()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                btn.disabled = false;
+                btn.textContent = originalText;
+                showToast(currentLanguage === 'ro' ? 'Imagine descărcată cu succes!' : 'Image downloaded successfully!', 'success');
+            }).catch(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                showToast(currentLanguage === 'ro' ? 'Eroare la generarea imaginii.' : 'Error generating image.', 'error');
+            });
+        }
+
+        // ---------- Audit log ----------
+        function showAuditLog() {
+            if (!appState.isAdmin) { showToast(currentLanguage === 'ro' ? 'Acces interzis!' : 'Access denied!', 'error'); return; }
             const container = document.getElementById('auditLogContent');
-            
             if (appState.auditLog.length === 0) {
                 container.innerHTML = `<p class="text-gray-500 text-center py-8">${currentLanguage === 'ro' ? 'Nu există înregistrări în audit log.' : 'No records in audit log.'}</p>`;
             } else {
                 container.innerHTML = appState.auditLog.map(log => `
                     <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-medium text-gray-900">${log.action}</p>
-                            <p class="text-sm text-gray-600">${new Date(log.timestamp).toLocaleString('ro-RO')}</p>
-                        </div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                            ${log.admin}
-                        </span>
-                    </div>
-                `).join('');
+                        <div><p class="font-medium text-gray-900">${escapeHtml(log.action)}</p>
+                        <p class="text-sm text-gray-600">${new Date(log.timestamp).toLocaleString(currentLanguage === 'ro' ? 'ro-RO' : 'en-GB')}</p></div>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">${log.admin}</span>
+                    </div>`).join('');
             }
-            
             document.getElementById('auditLogModal').classList.remove('hidden');
         }
 
         function addAuditLog(action) {
-            appState.auditLog.unshift({
-                action: action,
-                admin: 'Administrator',
-                timestamp: new Date().toISOString()
-            });
-            
-            if (appState.auditLog.length > 100) {
-                appState.auditLog.pop();
-            }
-            
+            appState.auditLog.unshift({ action: action, admin: 'Administrator', timestamp: new Date().toISOString() });
+            if (appState.auditLog.length > 150) appState.auditLog.pop();
             saveToFirebase();
         }
 
-        // Export Functions
+        // ---------- Export ----------
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            doc.setFontSize(20);
-            doc.text('Diaspora Romana Tournament', 20, 20);
-            
-            doc.setFontSize(14);
-            doc.text(`${currentLanguage === 'ro' ? 'Data:' : 'Date:'} ${new Date().toLocaleDateString('ro-RO')}`, 20, 35);
-            
-            let y = 50;
-            
-            // Main list
-            doc.setFontSize(12);
-            doc.text(currentLanguage === 'ro' ? 'Listă Principală:' : 'Main List:', 20, y);
-            y += 10;
-            
-            const mainMembers = appState.members.filter(m => m.status === 'main');
-            mainMembers.forEach((member, index) => {
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                const unavailableText = member.unavailableDate ? 
-                    ` (${currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until'} ${member.unavailableDate})` : '';
-                doc.text(`${index + 1}. ${member.name}${unavailableText}`, 30, y);
+            doc.setFontSize(18);
+            doc.text('Diaspora Romana Tournament', 20, 18);
+            doc.setFontSize(11);
+            doc.text(`${currentLanguage === 'ro' ? 'Data:' : 'Date:'} ${new Date().toLocaleDateString('ro-RO')}   |   ${currentLanguage === 'ro' ? 'Dimensiune echipă:' : 'Squad size:'} ${appState.squadSize}`, 20, 26);
+
+            let y = 40;
+            function section(title, members) {
+                if (y > 260) { doc.addPage(); y = 20; }
+                doc.setFontSize(13);
+                doc.text(title, 20, y);
                 y += 8;
-            });
-            
-            // Reserve list
-            y += 10;
-            doc.text(currentLanguage === 'ro' ? 'Listă Rezerve:' : 'Reserve List:', 20, y);
-            y += 10;
-            
-            const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
-                .sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate));
-            reserveMembers.forEach((member, index) => {
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.text(`${index + 1}. ${member.name}`, 30, y);
+                doc.setFontSize(10);
+                members.forEach((member, index) => {
+                    if (y > 280) { doc.addPage(); y = 20; }
+                    doc.text(`${index + 1}. ${member.name} — ${getTotalGoals(member)} ${currentLanguage === 'ro' ? 'goluri' : 'goals'}`, 26, y);
+                    y += 6;
+                });
                 y += 8;
+            }
+
+            section(currentLanguage === 'ro' ? 'Listă Principală' : 'Main List', sortByGoalsDesc(appState.members.filter(m => m.status === 'main')));
+            section(currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List', sortByGoalsDesc(appState.members.filter(m => m.status === 'reserve')));
+            const unavailable = [...appState.members.filter(m => m.status === 'unavailable')].sort((a, b) => new Date(a.unavailableDate.split('-').reverse().join('-')) - new Date(b.unavailableDate.split('-').reverse().join('-')));
+            if (y > 260) { doc.addPage(); y = 20; }
+            doc.setFontSize(13);
+            doc.text(currentLanguage === 'ro' ? 'Indisponibili' : 'Unavailable', 20, y);
+            y += 8;
+            doc.setFontSize(10);
+            unavailable.forEach((member, index) => {
+                if (y > 280) { doc.addPage(); y = 20; }
+                const label = currentLanguage === 'ro' ? 'până la' : 'until';
+                doc.text(`${index + 1}. ${member.name} — ${label} ${member.unavailableDate}`, 26, y);
+                y += 6;
             });
-            
-            // Unavailable list
-            y += 10;
-            doc.text(currentLanguage === 'ro' ? 'Indisponibili:' : 'Unavailable:', 20, y);
-            y += 10;
-            
-            const unavailableMembers = appState.members.filter(m => m.unavailableDate);
-            unavailableMembers.sort((a, b) => {
-                const dateA = new Date(a.unavailableDate.split('-').reverse().join('-'));
-                const dateB = new Date(b.unavailableDate.split('-').reverse().join('-'));
-                return dateA - dateB;
-            });
-            
-            unavailableMembers.forEach((member, index) => {
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                const unavailableText = currentLanguage === 'ro' ? 'Indisponibil până la' : 'Unavailable until';
-                doc.text(`${index + 1}. ${member.name} - ${unavailableText} ${member.unavailableDate}`, 30, y);
-                y += 8;
-            });
-            
+
             doc.save(`diaspora-tournament-${Date.now()}.pdf`);
             showToast(currentLanguage === 'ro' ? 'PDF exportat cu succes!' : 'PDF exported successfully!', 'success');
         }
 
         function exportToExcel() {
-            const mainMembers = appState.members.filter(m => m.status === 'main').map((m, i) => ({
-                'Poziție': i + 1,
-                'Nume': m.name,
-                'Status': currentLanguage === 'ro' ? 'Listă Principală' : 'Main List',
-                'Indisponibil': m.unavailableDate || ''
-            }));
-            
-            const reserveMembers = appState.members.filter(m => m.status === 'reserve' && !m.unavailableDate)
-                .sort((a, b) => new Date(a.addedDate) - new Date(b.addedDate))
-                .map((m, i) => ({
-                    'Poziție': i + 1,
-                    'Nume': m.name,
-                    'Status': currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List',
-                    'Indisponibil': m.unavailableDate || ''
-                }));
-            
-            const unavailableMembers = appState.members.filter(m => m.unavailableDate).sort((a, b) => {
-                const dateA = new Date(a.unavailableDate.split('-').reverse().join('-'));
-                const dateB = new Date(b.unavailableDate.split('-').reverse().join('-'));
-                return dateA - dateB;
-            }).map((m, i) => ({
-                'Poziție': i + 1,
-                'Nume': m.name,
-                'Status': m.status === 'main' ? 
-                    (currentLanguage === 'ro' ? 'Listă Principală' : 'Main List') : 
-                    (currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List'),
-                'Indisponibil': m.unavailableDate
-            }));
-            
+            const mainMembers = sortByGoalsDesc(appState.members.filter(m => m.status === 'main')).map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Goluri': getTotalGoals(m) }));
+            const reserveMembers = sortByGoalsDesc(appState.members.filter(m => m.status === 'reserve')).map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Goluri': getTotalGoals(m) }));
+            const unavailableMembers = [...appState.members.filter(m => m.status === 'unavailable')]
+                .sort((a, b) => new Date(a.unavailableDate.split('-').reverse().join('-')) - new Date(b.unavailableDate.split('-').reverse().join('-')))
+                .map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Indisponibil până la': m.unavailableDate }));
+
             const wb = XLSX.utils.book_new();
-            
-            // Create worksheets for each list
-            const wsMain = XLSX.utils.json_to_sheet(mainMembers);
-            const wsReserve = XLSX.utils.json_to_sheet(reserveMembers);
-            const wsUnavailable = XLSX.utils.json_to_sheet(unavailableMembers);
-            
-            XLSX.utils.book_append_sheet(wb, wsMain, currentLanguage === 'ro' ? 'Listă Principală' : 'Main List');
-            XLSX.utils.book_append_sheet(wb, wsReserve, currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List');
-            XLSX.utils.book_append_sheet(wb, wsUnavailable, currentLanguage === 'ro' ? 'Indisponibili' : 'Unavailable');
-            
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(mainMembers), currentLanguage === 'ro' ? 'Listă Principală' : 'Main List');
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(reserveMembers), currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List');
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(unavailableMembers), currentLanguage === 'ro' ? 'Indisponibili' : 'Unavailable');
             XLSX.writeFile(wb, `diaspora-tournament-${Date.now()}.xlsx`);
             showToast(currentLanguage === 'ro' ? 'Excel exportat cu succes!' : 'Excel exported successfully!', 'success');
         }
 
-        // UI Utilities
+        // ---------- UI utilities ----------
         function toggleDarkMode() {
             document.body.classList.toggle('dark');
             const isDark = document.body.classList.contains('dark');
             document.getElementById('darkModeIcon').textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem('darkMode', isDark);
         }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
+        function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                warning: 'bg-yellow-500',
-                info: 'bg-blue-500'
-            };
-            
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-yellow-500', info: 'bg-blue-500' };
             toast.className = `toast ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg`;
             toast.textContent = message;
-            
             container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // Event Listeners
-        document.getElementById('adminPassword').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') login();
+        // ---------- Event listeners ----------
+        document.getElementById('adminPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
+        document.getElementById('newMemberName').addEventListener('keypress', (e) => { if (e.key === 'Enter') addMember(); });
+        document.addEventListener('click', (e) => { if (!e.target.closest('.lang-dropdown')) document.getElementById('langDropdownMenu').classList.add('hidden'); });
+
+        // Close any open modal with the Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+                if (!modal.classList.contains('hidden')) closeModal(modal.id);
+            });
         });
 
-        document.getElementById('newMemberName').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addMember();
-        });
-
-        document.getElementById('unlockPassword').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') unlockDailyList();
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.lang-dropdown')) {
-                document.getElementById('langDropdownMenu').classList.add('hidden');
-            }
-        });
-
-        // Initialize dark mode
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark');
             document.getElementById('darkModeIcon').textContent = '☀️';
         }
 
-        // Initialize app on load
         window.addEventListener('load', initApp);
-
-        // Check unavailable dates every minute
         setInterval(checkUnavailableDates, 60000);
     </script>
 </body>
