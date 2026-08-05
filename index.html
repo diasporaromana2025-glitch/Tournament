@@ -120,8 +120,8 @@
         main button.bg-gray-600:hover { box-shadow: 0 6px 16px rgba(75,85,99,.3); }
 
         #screenshotTemplate { width: 900px; background:#0b1220; color:#e5e7eb; padding: 28px 32px; }
-        #screenshotTemplate .ss-row { display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border-radius:8px; margin-bottom:4px; }
-        #screenshotTemplate .ss-row.alt { background: rgba(255,255,255,0.03); }
+        .ss-row { display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border-radius:8px; margin-bottom:4px; }
+        .ss-row.alt { background: rgba(255,255,255,0.03); }
     </style>
 </head>
 <body class="min-h-screen transition-colors duration-300">
@@ -1148,7 +1148,7 @@
             document.getElementById('screenshotModal').classList.remove('hidden');
         }
 
-        function renderScreenshotTemplate() {
+        function buildScreenshotHTML() {
             const ranked = sortByGoalsDesc(appState.members.filter(m => m.status === 'main'));
             const half = Math.ceil(ranked.length / 2);
             const col1 = ranked.slice(0, half);
@@ -1156,13 +1156,18 @@
 
             function medal(rank) { return rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ('#' + rank); }
 
+            function truncateName(name, maxLen) {
+                return name.length > maxLen ? name.slice(0, maxLen - 1).trimEnd() + '…' : name;
+            }
+
             function rowHtml(m, rank, altIndex) {
-                return `<div class="ss-row ${altIndex % 2 === 1 ? 'alt' : ''}">
+                const rowBg = altIndex % 2 === 1 ? 'background:rgba(255,255,255,0.03);' : '';
+                return `<div class="ss-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;margin-bottom:4px;line-height:1.5;${rowBg}">
                     <div style="display:flex;align-items:center;gap:10px;min-width:0;">
-                        <span style="min-width:28px;font-weight:800;color:#facc15;font-size:13px;">${medal(rank)}</span>
-                        <span style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${escapeHtml(m.name)}</span>
+                        <span style="min-width:32px;font-weight:800;color:#facc15;font-size:15px;line-height:1.5;">${medal(rank)}</span>
+                        <span style="font-weight:600;font-size:16px;line-height:1.5;white-space:nowrap;">${escapeHtml(truncateName(m.name, 22))}</span>
                     </div>
-                    <span style="font-weight:800;font-size:14px;color:#34d399;">${getTotalGoals(m)} ⚽</span>
+                    <span style="font-weight:800;font-size:16px;color:#34d399;white-space:nowrap;line-height:1.5;">${getTotalGoals(m)} ⚽</span>
                 </div>`;
             }
 
@@ -1172,34 +1177,63 @@
             const totalGoals = ranked.reduce((s, m) => s + getTotalGoals(m), 0);
             const dateStr = new Date().toLocaleDateString(currentLanguage === 'ro' ? 'ro-RO' : 'en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
 
-            document.getElementById('screenshotTemplate').innerHTML = `
-                <div style="border-bottom:2px solid #059669;padding-bottom:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
+            return `
+                <div style="border-bottom:2px solid #059669;padding-bottom:16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;">
                     <div>
-                        <div style="font-size:22px;font-weight:800;letter-spacing:.5px;color:#f1f5f9;">DIASPORA ROMÂNĂ</div>
-                        <div style="font-size:13px;color:#34d399;font-weight:600;letter-spacing:1px;">LISTĂ PRINCIPALĂ OFICIALĂ</div>
+                        <div style="font-size:24px;font-weight:800;letter-spacing:.5px;color:#f1f5f9;">DIASPORA ROMÂNĂ</div>
+                        <div style="font-size:14px;color:#34d399;font-weight:600;letter-spacing:1px;">LISTĂ PRINCIPALĂ OFICIALĂ</div>
                     </div>
                     <div style="text-align:right;">
-                        <div style="font-size:12px;color:#94a3b8;">${dateStr}</div>
-                        <div style="display:inline-block;margin-top:4px;background:#059669;color:white;font-weight:700;font-size:12px;padding:3px 10px;border-radius:9999px;">${ranked.length} JUCĂTORI</div>
+                        <div style="font-size:13px;color:#94a3b8;">${dateStr}</div>
+                        <div style="display:inline-block;margin-top:4px;background:#059669;color:white;font-weight:700;font-size:13px;padding:3px 10px;border-radius:9999px;">${ranked.length} JUCĂTORI</div>
                     </div>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
                     <div>${col1Html}</div>
                     <div>${col2Html}</div>
                 </div>
-                <div style="border-top:1px solid #263858;margin-top:16px;padding-top:12px;display:flex;justify-content:space-between;font-size:12px;color:#94a3b8;">
+                <div style="border-top:1px solid #263858;margin-top:18px;padding-top:12px;display:flex;justify-content:space-between;font-size:13px;color:#94a3b8;">
                     <span>${currentLanguage === 'ro' ? 'Total goluri echipă' : 'Total team goals'}: <b style="color:#e5e7eb;">${totalGoals} ⚽</b></span>
                     <span>Diaspora Română Tournament</span>
                 </div>`;
         }
 
+        function renderScreenshotTemplate() {
+            document.getElementById('screenshotTemplate').innerHTML = buildScreenshotHTML();
+        }
+
         function downloadScreenshot() {
-            const el = document.getElementById('screenshotTemplate');
             const btn = document.getElementById('screenshotDownloadBtn');
             const originalText = btn.textContent;
             btn.disabled = true;
             btn.textContent = currentLanguage === 'ro' ? 'Se generează...' : 'Generating...';
-            html2canvas(el, { scale: 2, backgroundColor: '#0b1220' }).then(canvas => {
+
+            // Render an off-flow, unclipped clone (not inside any scrollable/overflow ancestor)
+            // so html2canvas captures the FULL list at full resolution, never a scrolled slice.
+            const clone = document.createElement('div');
+            clone.id = 'screenshotCaptureClone';
+            clone.style.position = 'absolute';
+            clone.style.top = '0';
+            clone.style.left = '-99999px';
+            clone.style.width = '980px';
+            clone.style.background = '#0b1220';
+            clone.style.color = '#e5e7eb';
+            clone.style.padding = '32px 36px';
+            clone.style.fontFamily = "'Inter', sans-serif";
+            clone.innerHTML = buildScreenshotHTML();
+            document.body.appendChild(clone);
+
+            // Force layout so scrollWidth/scrollHeight are accurate before capture
+            void clone.offsetHeight;
+
+            html2canvas(clone, {
+                scale: 2,
+                backgroundColor: '#0b1220',
+                width: clone.scrollWidth,
+                height: clone.scrollHeight,
+                windowWidth: clone.scrollWidth,
+                windowHeight: clone.scrollHeight
+            }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `lista-principala-${todayISO()}.png`;
                 link.href = canvas.toDataURL('image/png');
@@ -1211,6 +1245,8 @@
                 btn.disabled = false;
                 btn.textContent = originalText;
                 showToast(currentLanguage === 'ro' ? 'Eroare la generarea imaginii.' : 'Error generating image.', 'error');
+            }).finally(() => {
+                clone.remove();
             });
         }
 
