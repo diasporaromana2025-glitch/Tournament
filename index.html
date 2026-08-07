@@ -382,9 +382,14 @@
 
     <div id="screenshotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeModal('screenshotModal')">
         <div class="bg-white rounded-xl p-6 max-w-4xl w-full fade-in max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
                 <h3 class="text-xl font-bold text-gray-900" data-lang="screenshotTitle">Captură Listă Principală</h3>
                 <button onclick="closeModal('screenshotModal')" class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="flex items-center gap-3 mb-4">
+                <label class="text-sm font-medium text-gray-700" data-lang="dateLabel">Data</label>
+                <input type="date" id="screenshotDate" onchange="renderScreenshotTemplate()" class="px-3 py-2 border border-gray-300 rounded-lg">
+                <span class="text-xs text-gray-500" data-lang="screenshotDateHint">Golurile din captură sunt cele marcate în ziua selectată, nu totalul acumulat.</span>
             </div>
             <div class="border border-gray-200 rounded-lg overflow-auto max-h-[65vh] flex justify-center bg-gray-100 p-4">
                 <div id="screenshotTemplate"></div>
@@ -454,7 +459,7 @@
                 subtitle: "FC Mobile Club Management",
                 adminLogin: "Admin Login", logout: "Logout",
                 totalMembers: "Membri Total", mainList: "Listă Principală", reserveList: "Listă Rezerve", unavailableList: "Indisponibili",
-                topScorer: "Golgheter",
+                topScorer: "Golgheter Azi",
                 adminPanel: "Panou Administrare", squadSizeLabel: "Dimensiune Echipă:",
                 addMember: "Adaugă Membru", bulkUpload: "Încărcare Bulk", dailyGoalsBtn: "Goluri Zilnice", auditLog: "Audit Log",
                 memberLists: "Liste Membri", screenshotBtn: "Captură Listă",
@@ -470,6 +475,7 @@
                 goalsHistoryByDateDesc: "Alegeți o dată pentru a vedea golurile marcate de fiecare jucător în acea zi.",
                 noHistoryDates: "Nu există încă goluri înregistrate.", totalForDate: "Total zi",
                 screenshotTitle: "Captură Listă Principală", downloadImage: "Descarcă Imaginea",
+                screenshotDateHint: "Golurile din captură sunt cele marcate în ziua selectată, nu totalul acumulat.",
                 auditLogTitle: "Audit Log", setUnavailableTitle: "Setare Indisponibilitate",
                 save: "Salvează", backToAll: "Înapoi", close: "Închide",
                 unavailableDate: "Data indisponibilității (ZZ-LL-AAAA)"
@@ -479,7 +485,7 @@
                 subtitle: "FC Mobile Club Management",
                 adminLogin: "Admin Login", logout: "Logout",
                 totalMembers: "Total Members", mainList: "Main List", reserveList: "Reserve List", unavailableList: "Unavailable",
-                topScorer: "Top Scorer",
+                topScorer: "Top Scorer Today",
                 adminPanel: "Admin Panel", squadSizeLabel: "Squad Size:",
                 addMember: "Add Member", bulkUpload: "Bulk Upload", dailyGoalsBtn: "Daily Goals", auditLog: "Audit Log",
                 memberLists: "Member Lists", screenshotBtn: "List Screenshot",
@@ -495,6 +501,7 @@
                 goalsHistoryByDateDesc: "Pick a date to see the goals scored by each player that day.",
                 noHistoryDates: "No goals recorded yet.", totalForDate: "Day total",
                 screenshotTitle: "Main List Screenshot", downloadImage: "Download Image",
+                screenshotDateHint: "The screenshot shows goals scored on the selected day only, not the accumulated total.",
                 auditLogTitle: "Audit Log", setUnavailableTitle: "Set Unavailability",
                 save: "Save", backToAll: "Back", close: "Close",
                 unavailableDate: "Unavailable Date (DD-MM-YYYY)"
@@ -596,6 +603,17 @@
             return Object.values(member.goals).reduce((a, b) => a + (parseInt(b) || 0), 0);
         }
 
+        // Goals scored on one specific day (NOT summed across history) — this is the
+        // metric shown by default everywhere in the app (cards, dashboard, screenshot).
+        function getGoalsForDate(member, dateKey) {
+            if (!member.goals || !dateKey) return 0;
+            return parseInt(member.goals[dateKey]) || 0;
+        }
+
+        function getTodayGoals(member) {
+            return getGoalsForDate(member, todayISO());
+        }
+
         function getInitials(name) {
             if (!name) return '?';
             return name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -607,7 +625,20 @@
             return `${d}-${m}-${y}`;
         }
 
-        function sortByGoalsDesc(list) {
+        function formatDateLong(isoDate) {
+            if (!isoDate) return '';
+            const d = new Date(isoDate + 'T00:00:00');
+            return d.toLocaleDateString(currentLanguage === 'ro' ? 'ro-RO' : 'en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+        }
+
+        // Sorts by goals scored on a given day (defaults to today) — NOT lifetime total.
+        function sortByGoalsDesc(list, dateKey) {
+            const dk = dateKey || todayISO();
+            return [...list].sort((a, b) => getGoalsForDate(b, dk) - getGoalsForDate(a, dk) || a.name.localeCompare(b.name));
+        }
+
+        // Sorts by lifetime accumulated total — used only for the full-roster PDF/Excel exports.
+        function sortByLifetimeGoalsDesc(list) {
             return [...list].sort((a, b) => getTotalGoals(b) - getTotalGoals(a) || a.name.localeCompare(b.name));
         }
 
@@ -718,24 +749,24 @@
             }
 
             const eligible = appState.members.filter(m => m.status !== 'unavailable');
-            const ranked = sortByGoalsDesc(eligible).filter(m => getTotalGoals(m) > 0);
+            const ranked = sortByGoalsDesc(eligible).filter(m => getTodayGoals(m) > 0);
             const topScorerName = document.getElementById('topScorerName');
             const topScorerGoals = document.getElementById('topScorerGoals');
             if (ranked.length > 0) {
                 topScorerName.textContent = ranked[0].name;
-                topScorerGoals.textContent = `⚽ ${getTotalGoals(ranked[0])} ${currentLanguage === 'ro' ? 'goluri' : 'goals'}`;
+                topScorerGoals.textContent = `⚽ ${getTodayGoals(ranked[0])} ${currentLanguage === 'ro' ? 'goluri azi' : 'goals today'}`;
             } else {
                 topScorerName.textContent = '—';
-                topScorerGoals.textContent = currentLanguage === 'ro' ? 'Fără goluri încă' : 'No goals yet';
+                topScorerGoals.textContent = currentLanguage === 'ro' ? 'Fără goluri azi' : 'No goals today';
             }
         }
 
         function updateRibbon() {
             const main = appState.members.filter(m => m.status === 'main').length;
             document.getElementById('ribbonSquad').textContent = `⚽ ${currentLanguage === 'ro' ? 'Echipă' : 'Squad'}: ${main}/${appState.squadSize}`;
-            const eligible = sortByGoalsDesc(appState.members.filter(m => m.status !== 'unavailable')).filter(m => getTotalGoals(m) > 0);
+            const eligible = sortByGoalsDesc(appState.members.filter(m => m.status !== 'unavailable')).filter(m => getTodayGoals(m) > 0);
             document.getElementById('ribbonTop').textContent = eligible.length > 0
-                ? `🏅 ${currentLanguage === 'ro' ? 'Golgheter' : 'Top scorer'}: ${eligible[0].name} (${getTotalGoals(eligible[0])}⚽)`
+                ? `🏅 ${currentLanguage === 'ro' ? 'Golgheter azi' : 'Top scorer today'}: ${eligible[0].name} (${getTodayGoals(eligible[0])}⚽)`
                 : '';
         }
 
@@ -745,7 +776,8 @@
         }
 
         function renderPlayerCard(member, rank) {
-            const total = getTotalGoals(member);
+            const todayGoals = getTodayGoals(member);
+            const lifetimeTotal = getTotalGoals(member);
             const tierClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : '';
             const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ('#' + rank);
             const pillColors = member.status === 'main' ? 'bg-green-100 text-green-700' : member.status === 'unavailable' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700';
@@ -772,7 +804,7 @@
                             <p class="font-medium text-gray-900 truncate">${escapeHtml(member.name)}</p>
                             <span class="status-pill ${pillColors}">${escapeHtml(statusLabel(member))}</span>
                         </div>
-                        <div class="goals-pill">⚽ ${total}</div>
+                        <div class="goals-pill" title="${currentLanguage === 'ro' ? 'Total istoric' : 'Lifetime total'}: ${lifetimeTotal} ⚽">⚽ ${todayGoals} <span style="opacity:.6;font-weight:600;font-size:.65rem;">${currentLanguage === 'ro' ? 'azi' : 'today'}</span></div>
                     </div>
                     ${actions}
                 </div>`;
@@ -1144,12 +1176,16 @@
 
         // ---------- Screenshot ----------
         function showScreenshotModal() {
+            const dateInput = document.getElementById('screenshotDate');
+            if (!dateInput.value) dateInput.value = todayISO();
             renderScreenshotTemplate();
             document.getElementById('screenshotModal').classList.remove('hidden');
         }
 
-        function buildScreenshotHTML() {
-            const ranked = sortByGoalsDesc(appState.members.filter(m => m.status === 'main'));
+        // Builds the screenshot markup for ONE specific day's goals (never a lifetime sum).
+        function buildScreenshotHTML(dateKey) {
+            const dk = dateKey || todayISO();
+            const ranked = sortByGoalsDesc(appState.members.filter(m => m.status === 'main'), dk);
             const half = Math.ceil(ranked.length / 2);
             const col1 = ranked.slice(0, half);
             const col2 = ranked.slice(half);
@@ -1167,21 +1203,22 @@
                         <span style="min-width:32px;font-weight:800;color:#facc15;font-size:15px;line-height:1.5;">${medal(rank)}</span>
                         <span style="font-weight:600;font-size:16px;line-height:1.5;white-space:nowrap;">${escapeHtml(truncateName(m.name, 22))}</span>
                     </div>
-                    <span style="font-weight:800;font-size:16px;color:#34d399;white-space:nowrap;line-height:1.5;">${getTotalGoals(m)} ⚽</span>
+                    <span style="font-weight:800;font-size:16px;color:#34d399;white-space:nowrap;line-height:1.5;">${getGoalsForDate(m, dk)} ⚽</span>
                 </div>`;
             }
 
             const col1Html = col1.map((m, i) => rowHtml(m, i + 1, i)).join('');
             const col2Html = col2.map((m, i) => rowHtml(m, half + i + 1, i)).join('');
 
-            const totalGoals = ranked.reduce((s, m) => s + getTotalGoals(m), 0);
-            const dateStr = new Date().toLocaleDateString(currentLanguage === 'ro' ? 'ro-RO' : 'en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            const totalGoals = ranked.reduce((s, m) => s + getGoalsForDate(m, dk), 0);
+            const dateStr = formatDateLong(dk);
+            const isToday = dk === todayISO();
 
             return `
                 <div style="border-bottom:2px solid #059669;padding-bottom:16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;">
                     <div>
                         <div style="font-size:24px;font-weight:800;letter-spacing:.5px;color:#f1f5f9;">DIASPORA ROMÂNĂ</div>
-                        <div style="font-size:14px;color:#34d399;font-weight:600;letter-spacing:1px;">LISTĂ PRINCIPALĂ OFICIALĂ</div>
+                        <div style="font-size:14px;color:#34d399;font-weight:600;letter-spacing:1px;">${currentLanguage === 'ro' ? 'GOLURI ZIUA' : 'GOALS FOR'} ${dateStr.toUpperCase()}${isToday ? (currentLanguage === 'ro' ? ' (AZI)' : ' (TODAY)') : ''}</div>
                     </div>
                     <div style="text-align:right;">
                         <div style="font-size:13px;color:#94a3b8;">${dateStr}</div>
@@ -1193,17 +1230,20 @@
                     <div>${col2Html}</div>
                 </div>
                 <div style="border-top:1px solid #263858;margin-top:18px;padding-top:12px;display:flex;justify-content:space-between;font-size:13px;color:#94a3b8;">
-                    <span>${currentLanguage === 'ro' ? 'Total goluri echipă' : 'Total team goals'}: <b style="color:#e5e7eb;">${totalGoals} ⚽</b></span>
+                    <span>${currentLanguage === 'ro' ? 'Total goluri echipă (ziua selectată)' : 'Total team goals (selected day)'}: <b style="color:#e5e7eb;">${totalGoals} ⚽</b></span>
                     <span>Diaspora Română Tournament</span>
                 </div>`;
         }
 
         function renderScreenshotTemplate() {
-            document.getElementById('screenshotTemplate').innerHTML = buildScreenshotHTML();
+            const dateInput = document.getElementById('screenshotDate');
+            const dk = dateInput.value || todayISO();
+            document.getElementById('screenshotTemplate').innerHTML = buildScreenshotHTML(dk);
         }
 
         function downloadScreenshot() {
             const btn = document.getElementById('screenshotDownloadBtn');
+            const dk = document.getElementById('screenshotDate').value || todayISO();
             const originalText = btn.textContent;
             btn.disabled = true;
             btn.textContent = currentLanguage === 'ro' ? 'Se generează...' : 'Generating...';
@@ -1220,7 +1260,7 @@
             clone.style.color = '#e5e7eb';
             clone.style.padding = '32px 36px';
             clone.style.fontFamily = "'Inter', sans-serif";
-            clone.innerHTML = buildScreenshotHTML();
+            clone.innerHTML = buildScreenshotHTML(dk);
             document.body.appendChild(clone);
 
             // Force layout so scrollWidth/scrollHeight are accurate before capture
@@ -1235,7 +1275,7 @@
                 windowHeight: clone.scrollHeight
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `lista-principala-${todayISO()}.png`;
+                link.download = `lista-principala-${dk}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 btn.disabled = false;
@@ -1291,14 +1331,14 @@
                 doc.setFontSize(10);
                 members.forEach((member, index) => {
                     if (y > 280) { doc.addPage(); y = 20; }
-                    doc.text(`${index + 1}. ${member.name} — ${getTotalGoals(member)} ${currentLanguage === 'ro' ? 'goluri' : 'goals'}`, 26, y);
+                    doc.text(`${index + 1}. ${member.name} — ${getTotalGoals(member)} ${currentLanguage === 'ro' ? 'goluri (total)' : 'goals (total)'}`, 26, y);
                     y += 6;
                 });
                 y += 8;
             }
 
-            section(currentLanguage === 'ro' ? 'Listă Principală' : 'Main List', sortByGoalsDesc(appState.members.filter(m => m.status === 'main')));
-            section(currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List', sortByGoalsDesc(appState.members.filter(m => m.status === 'reserve')));
+            section(currentLanguage === 'ro' ? 'Listă Principală' : 'Main List', sortByLifetimeGoalsDesc(appState.members.filter(m => m.status === 'main')));
+            section(currentLanguage === 'ro' ? 'Listă Rezerve' : 'Reserve List', sortByLifetimeGoalsDesc(appState.members.filter(m => m.status === 'reserve')));
             const unavailable = [...appState.members.filter(m => m.status === 'unavailable')].sort((a, b) => new Date(a.unavailableDate.split('-').reverse().join('-')) - new Date(b.unavailableDate.split('-').reverse().join('-')));
             if (y > 260) { doc.addPage(); y = 20; }
             doc.setFontSize(13);
@@ -1317,8 +1357,8 @@
         }
 
         function exportToExcel() {
-            const mainMembers = sortByGoalsDesc(appState.members.filter(m => m.status === 'main')).map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Goluri': getTotalGoals(m) }));
-            const reserveMembers = sortByGoalsDesc(appState.members.filter(m => m.status === 'reserve')).map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Goluri': getTotalGoals(m) }));
+            const mainMembers = sortByLifetimeGoalsDesc(appState.members.filter(m => m.status === 'main')).map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Goluri (total)': getTotalGoals(m) }));
+            const reserveMembers = sortByLifetimeGoalsDesc(appState.members.filter(m => m.status === 'reserve')).map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Goluri (total)': getTotalGoals(m) }));
             const unavailableMembers = [...appState.members.filter(m => m.status === 'unavailable')]
                 .sort((a, b) => new Date(a.unavailableDate.split('-').reverse().join('-')) - new Date(b.unavailableDate.split('-').reverse().join('-')))
                 .map((m, i) => ({ 'Poziție': i + 1, 'Nume': m.name, 'Indisponibil până la': m.unavailableDate }));
