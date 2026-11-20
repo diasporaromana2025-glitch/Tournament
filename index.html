@@ -152,7 +152,7 @@ textarea{min-height:160px;resize:vertical;font-family:ui-monospace,Consolas,mono
 .lcard .stats span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 /* fixtures */
 .round{margin-bottom:22px}
-.round-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.round-h{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .round-h h3{margin:0;font-size:15px}
 .fx{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.15s}
 .fx:hover{border-color:#41527b;transform:translateY(-1px)}
@@ -252,6 +252,64 @@ html{-webkit-text-size-adjust:100%}
 .setup .step .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--panel3);font-weight:800;flex:none}
 .setup .step.ok{opacity:.6}.setup .step.ok .n{background:var(--acc);color:#04261a}
 .rules ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;line-height:1.55}
+.dlbtn{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:9px;border:1px solid var(--border2);background:var(--bg);color:var(--muted);font-size:12px;cursor:pointer;white-space:nowrap;text-align:left}
+.dlbtn .dlt{display:flex;flex-direction:column;line-height:1.25}
+.dlbtn .dlt>span{font-size:11px;color:var(--dim)}
+.dlbtn.bad{color:var(--bad);border-color:rgba(239,75,91,.45)}.dlbtn.warn{color:var(--warn);border-color:rgba(245,165,36,.45)}.dlbtn.blue{color:#8bb8ff}
+.dlbtn:disabled{cursor:default}
+.dlmini{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px;margin-top:4px;color:#8bb8ff;white-space:nowrap}
+.dlmini.bad{color:var(--bad)}.dlmini.warn{color:var(--warn)}
+.cd{font-weight:700}
+.banner.bad{background:rgba(239,75,91,.08);border-color:rgba(239,75,91,.35);color:#ffc2c8}
+.banner.bad .btn{margin-left:auto}
+.rules ol li b{color:var(--text)}
+#r-liga{scroll-margin-top:80px}
+.h2h-hero{margin-top:22px;padding:26px 24px;border-radius:18px;border:1px solid rgba(245,165,36,.35);background:radial-gradient(600px 220px at 100% 0,rgba(245,165,36,.16),transparent 70%),linear-gradient(135deg,var(--panel2),var(--panel));scroll-margin-top:80px}
+.h2h-hero .kicker{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#f5c26b;font-weight:700}
+.h2h-hero h2{margin:6px 0 2px;font-size:28px;font-weight:900;display:flex;align-items:center;gap:12px}
+.h2h-hero h2 svg{color:#f5c26b;width:30px;height:30px}
+.h2h-hero .tagline{font-size:12px;letter-spacing:3px;color:var(--muted);font-weight:700;margin-bottom:14px}
+.h2h-hero p{margin:6px 0;max-width:820px;line-height:1.6}
+.rtoc{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:16px}
+.rtoc button{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;text-align:left;font-size:13px}
+.rtoc button:hover{border-color:var(--acc)}
+.rtoc .n{font-weight:900;color:var(--acc);min-width:22px}
+.rsec{margin-top:14px;padding:20px;border-radius:var(--r);border:1px solid var(--border);background:linear-gradient(180deg,var(--panel),rgba(17,26,45,.85));scroll-margin-top:80px}
+.rsec-h{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.rnum{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:17px;color:#04261a;background:linear-gradient(135deg,var(--acc),#22d3ee)}
+.rsec-h h3{margin:0;font-size:17px}
+.rtag{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.rsec-b{line-height:1.6}
+.rsec-b p{margin:0 0 10px}
+.rsec-b ul,.rsec-b ol{margin:0 0 12px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.rsec-b h4{margin:16px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.rnote{display:flex;gap:10px;padding:12px 14px;border-radius:12px;margin-top:12px;border:1px solid;font-size:13.5px;line-height:1.55}
+.rnote>svg{flex:none;margin-top:2px}
+.rnote b.t{display:block;text-transform:uppercase;letter-spacing:.8px;font-size:11.5px;margin-bottom:2px}
+.rnote.info{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);color:#cfe0ff}
+.rnote.warn{background:rgba(245,165,36,.08);border-color:rgba(245,165,36,.32);color:#ffe0a8}
+.rnote.bad{background:rgba(239,75,91,.08);border-color:rgba(239,75,91,.35);color:#ffc2c8}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:4px 0 12px}
+.rcard{padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--bg)}
+.rcard .k{font-size:11px;font-weight:800;color:var(--acc);letter-spacing:1px}
+.rcard>b{display:block;margin:4px 0 2px}
+.rcard>span:last-child{color:var(--muted);font-size:13px}
+.rflow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin-bottom:6px}
+.rflow .st{flex:1 1 150px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--bg);text-align:center}
+.rflow .st b{display:block;font-size:13px}
+.rflow .st span{font-size:12px;color:var(--muted)}
+.rflow .ar{display:grid;place-items:center;color:var(--dim)}
+.rflow .st.end{border-color:rgba(31,224,138,.45);background:rgba(31,224,138,.07)}
+.rscore{display:flex;align-items:center;justify-content:center;gap:18px;padding:16px;border-radius:12px;background:var(--bg);border:1px dashed var(--border2);margin:6px 0 8px;color:var(--dim)}
+.rscore .v{font-size:36px;font-weight:900;color:var(--text)}
+.rpills{display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--dim)}
+.rpills .chip{font-size:12.5px;padding:5px 12px}
+.rclose{margin-top:18px;padding:24px;border-radius:18px;text-align:center;border:1px solid rgba(31,224,138,.35);background:linear-gradient(135deg,rgba(31,224,138,.1),rgba(59,130,246,.08))}
+.rclose .big{font-size:18px;font-weight:900;line-height:1.45}
+.rclose p{max-width:720px;margin:10px auto 0;color:var(--muted);line-height:1.6}
+.rclose .foot{margin-top:14px;font-size:11px;letter-spacing:2px;color:var(--dim);font-weight:700}
+@media (max-width:640px){ .rflow{flex-direction:column}.rflow .ar{transform:rotate(90deg)}.rsec{padding:16px}.h2h-hero{padding:20px 16px}.h2h-hero h2{font-size:22px} }
+@media print{ .rsec,.h2h-hero,.rclose,.rcard,.rflow .st,.rnote{background:#fff!important;color:#000!important;border-color:#bbb!important;break-inside:avoid} .rcard>span:last-child,.rflow .st span,.rclose p{color:#333!important} }
 code{background:var(--panel3);padding:1px 6px;border-radius:5px;font-size:12px}
 /* rând scor pe telefon */
 .duels td.gsum{display:none}
@@ -393,6 +451,10 @@ img,svg{max-width:100%}
   .duels td.wo{grid-column:1/-1;display:flex;align-items:center;gap:8px}
   .duels td.wo .glbl{margin-right:auto}
   .duels td.wo select{font-size:14px}
+  .duels td.dlc .dlbtn{white-space:normal;min-width:0;max-width:78%}
+  .duels td.dlc .dlt{flex-direction:row;flex-wrap:wrap;column-gap:6px}
+  .duels td.dlc{grid-column:1/-1;display:flex;align-items:center;gap:8px}
+  .duels td.dlc .glbl{margin-right:auto}
   .duels tr.H td.hcell,.duels tr.A td.acell{padding:4px}
   /* clasament și statistici */
   .matrix td,.matrix th{padding:6px 4px}
@@ -476,6 +538,9 @@ const ICONS = {
   home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
   shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  alert:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  video:'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="m22 8-6 4 6 4z"/>',
   cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
   trophy:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
   chart:'<path d="M18 20V10M12 20V4M6 20v-6"/>',
@@ -589,9 +654,10 @@ function normT(t){
   t.fixtures = arr(t.fixtures).map(f => {
     f.date = f.date || ''; f.lineupHome = f.lineupHome ? arr(f.lineupHome) : null; f.lineupAway = f.lineupAway ? arr(f.lineupAway) : null;
     f.duels = arr(f.duels).map(d => { const g = d.games || {}; const n = d.n || Math.max(t.settings.matchesPerDuel, ...Object.keys(g).map(k => +k + 1), 1);
-      return {...d, n, forfeit: d.forfeit || null, homePid: d.homePid || null, awayPid: d.awayPid || null,
+      return {...d, n, forfeit: d.forfeit || null, deadline: d.deadline || '', homePid: d.homePid || null, awayPid: d.awayPid || null,
         games: Array.from({length: n}, (_, k) => ({h: numOrNull(g[k]?.h), a: numOrNull(g[k]?.a)}))}; });
     return f; });
+  t.deadlines = (t.deadlines && typeof t.deadlines === 'object' && !Array.isArray(t.deadlines)) ? t.deadlines : {};
   t.createdAt = t.createdAt || 0; t.status = t.status === 'incheiat' ? 'incheiat' : 'activ'; return t;
 }
 function initialTournament(){
@@ -665,6 +731,42 @@ function tInfo(t){
 }
 const fmtDate = ms => ms ? new Date(ms).toLocaleDateString('ro-RO', {day: '2-digit', month: 'short', year: 'numeric'}) : '';
 const fxLabel = (t, f) => `E${f.round} ${Lg(t, f.homeId)?.name} vs ${Lg(t, f.awayId)?.name}`;
+
+/* ---------- termene de finalizare (etapă → duel) ---------- */
+const roundDl = (t, r) => (t.deadlines || {})['r' + r] || '';
+const duelDl = (t, f, d) => (d && d.deadline) || roundDl(t, f.round);
+const fmtDl = (s, long) => s ? new Date(s).toLocaleString('ro-RO', long ? {weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit'} : {weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}) : '';
+const dlShort = s => s ? new Date(s).toLocaleString('ro-RO', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}) : '';
+const leftTxt = ms => { const m = Math.max(1, Math.floor(Math.abs(ms) / 6e4)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mm = m % 60;
+  return d ? `${d} ${d === 1 ? 'zi' : 'zile'}${h ? ' ' + h + ' h' : ''}` : h ? `${h} h${mm ? ' ' + mm + ' min' : ''}` : `${mm} min`; };
+function dlState(s, done){
+  if (!s) return null; const ms = new Date(s).getTime() - Date.now(); if (isNaN(ms)) return null;
+  if (done) return {cls: '', k: 'done', ms};
+  if (ms < 0) return {cls: 'bad', k: 'late', ms};
+  if (ms < 864e5) return {cls: 'warn', k: 'soon', ms};
+  return {cls: 'blue', k: 'ok', ms};
+}
+// numărătoare inversă: textul se actualizează live (vezi tickDl)
+const cdTxt = x => x.k === 'late' ? 'Depășit cu ' + leftTxt(x.ms) : 'Mai sunt ' + leftTxt(x.ms);
+const cdSpan = (s, x) => `<b class="cd" data-dl="${esc(s)}" data-k="${x.k}">${cdTxt(x)}</b>`;
+const dlChip = (s, done) => { const x = dlState(s, done); if (!x) return '';
+  return `<span class="chip ${x.cls}" title="Data și ora de finalizare">${ic('clock', 12)}${x.k === 'done' ? 'Termen ' + fmtDl(s) : `${cdSpan(s, x)}<span class="dim">·</span>${fmtDl(s)}`}</span>`; };
+const dlMini = (s, done) => { const x = dlState(s, done); return x && !done ? `<div class="dlmini ${x.cls}" title="Termen de finalizare: ${esc(fmtDl(s))}">${ic('clock', 11)}${cdSpan(s, x)}</div>` : ''; };
+function tickDl(){
+  let flip = false;
+  document.querySelectorAll('.cd[data-dl]').forEach(el => { const x = dlState(el.dataset.dl, false); if (!x) return;
+    if (x.k !== el.dataset.k) flip = true; else el.textContent = cdTxt(x); });
+  if (flip && !$('#modal-root').innerHTML) softRender();
+}
+setInterval(tickDl, 20000);
+function overdue(t){ // ce a trecut de termen și nu e finalizat
+  const now = Date.now(), out = [];
+  for (const f of t.fixtures){
+    if (!f.duels.length){ const s = roundDl(t, f.round); if (s && new Date(s).getTime() < now) out.push({f}); continue; }
+    for (const d of f.duels){ const s = duelDl(t, f, d); if (s && new Date(s).getTime() < now && !duelRes(d, t.settings).complete) out.push({f, d}); }
+  }
+  return out;
+}
 
 /* ---------- logica de joc ---------- */
 function duelRes(d, S){
@@ -875,6 +977,8 @@ function vDashboard(t){
   const warn = rosterWarnings(t);
   return `
   ${head}
+  ${(() => { if (isFinished(t)) return ''; const o = overdue(t); if (!o.length) return ''; const nd = o.filter(x => x.d).length, nf = o.filter(x => !x.d).length;
+    return `<div class="banner bad">${ic('clock')}<div><b>Termene depășite:</b> ${[nd ? nd + (nd === 1 ? ' duel nefinalizat' : ' dueluri nefinalizate') : '', nf ? nf + (nf === 1 ? ' meci fără perechi extrase' : ' meciuri fără perechi extrase') : ''].filter(Boolean).join(' · ')}.</div><button class="btn sm" data-act="go" data-v="schedule">Vezi programul</button></div>`; })()}
   ${warn.length && isAdmin() ? `<div class="banner">${ic('shield')}<div>${warn.slice(0, 3).join('<br>')}${warn.length > 3 ? `<br>…și încă ${warn.length - 3}` : ''}</div></div>` : ''}
   <div class="grid g4" style="margin-bottom:16px">
     <div class="card kpi"><span class="l">Meciuri jucate</span><span class="v">${done.length}<span class="dim" style="font-size:18px">/${fx.length}</span></span><div class="bar"><i style="width:${pct(done.length, fx.length)}%"></i></div></div>
@@ -983,7 +1087,7 @@ function fxCard(t, f){
   const date = f.date ? new Date(f.date).toLocaleString('ro-RO', {weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}) : '';
   return `<div class="fx" data-act="openFx" data-id="${f.id}">
     <div class="team home ${r.complete && r.out === 'H' ? 'win' : ''}" style="justify-content:flex-end"><b>${esc(H?.name)}</b>${emblem(H, 34)}</div>
-    <div class="sc">${r.touched || r.complete ? `<div class="s">${r.uH} – ${r.uA}</div>` : '<div class="vs">VS</div>'}<div style="margin-top:4px"><span class="chip ${s.cls}">${s.txt}</span></div>${date ? `<div class="dim" style="font-size:11px;margin-top:4px">${date}</div>` : `<div class="dim" style="font-size:11px;margin-top:4px">Etapa ${f.round}</div>`}</div>
+    <div class="sc">${r.touched || r.complete ? `<div class="s">${r.uH} – ${r.uA}</div>` : '<div class="vs">VS</div>'}<div style="margin-top:4px"><span class="chip ${s.cls}">${s.txt}</span></div>${date ? `<div class="dim" style="font-size:11px;margin-top:4px">${date}</div>` : `<div class="dim" style="font-size:11px;margin-top:4px">Etapa ${f.round}</div>`}${dlMini(roundDl(t, f.round), r.complete)}</div>
     <div class="team ${r.complete && r.out === 'A' ? 'win' : ''}">${emblem(A, 34)}<b>${esc(A?.name)}</b></div></div>`;
 }
 function vSchedule(t){
@@ -995,7 +1099,7 @@ function vSchedule(t){
   ${!fx.length ? `<div class="empty">${t.leagues.length < 2 ? 'Ai nevoie de cel puțin 2 ligi.' : `Programul nu e generat încă. Aplicația va crea aleatoriu ${t.leagues.length % 2 ? t.leagues.length : t.leagues.length - 1} etape în care fiecare ligă întâlnește fiecare altă ligă${S.legs === 2 ? ' (tur și retur)' : ''}.`}</div>` :
   rounds.map(r => { const list = fx.filter(f => f.round === r); const ids = new Set(list.flatMap(f => [f.homeId, f.awayId])); const bye = t.leagues.filter(l => !ids.has(l.id));
     const doneN = list.filter(f => fixtureRes(t, f).complete).length;
-    return `<div class="round"><div class="round-h"><h3>Etapa ${r}</h3><span class="chip ${doneN === list.length ? 'ok' : ''}">${doneN}/${list.length} finalizate</span>${bye.length ? `<span class="chip">Stă: ${bye.map(l => esc(l.name)).join(', ')}</span>` : ''}<span class="sp" style="flex:1"></span><button class="btn sm" data-act="shotRound" data-r="${r}">${ic('cam', 14)}Captură etapă</button></div>
+    return `<div class="round"><div class="round-h"><h3>Etapa ${r}</h3><span class="chip ${doneN === list.length ? 'ok' : ''}">${doneN}/${list.length} finalizate</span>${bye.length ? `<span class="chip">Stă: ${bye.map(l => esc(l.name)).join(', ')}</span>` : ''}${dlChip(roundDl(t, r), doneN === list.length)}<span class="sp" style="flex:1"></span>${canEdit() ? `<button class="btn sm ghost" data-act="roundDl" data-r="${r}">${ic('clock', 14)}${roundDl(t, r) ? 'Modifică termenul' : 'Setează termen'}</button>` : ''}<button class="btn sm" data-act="shotRound" data-r="${r}">${ic('cam', 14)}Captură etapă</button></div>
       <div class="fxlist">${list.map(f => fxCard(t, f)).join('')}</div></div>`; }).join('')}`;
 }
 
@@ -1004,11 +1108,11 @@ function vFixture(t){
   const f = t.fixtures.find(x => x.id === ui.fxId); if (!f){ ui.view = 'schedule'; return vSchedule(t); }
   const S = t.settings, H = Lg(t, f.homeId), A = Lg(t, f.awayId), r = fixtureRes(t, f);
   const head = `<div class="row between noprint fxtools" style="margin-bottom:14px"><button class="btn ghost" data-act="go" data-v="schedule">${ic('back')}Înapoi la program</button>
-    <div class="row"><label class="muted" style="font-size:12px">Data & ora</label><input type="datetime-local" value="${esc(f.date)}" data-change="fxDate" style="width:auto" ${canEdit() ? '' : 'disabled'}>
+    <div class="row"><label class="muted" style="font-size:12px">Data & ora meciului</label><input type="datetime-local" value="${esc(f.date)}" data-change="fxDate" style="width:auto" ${canEdit() ? '' : 'disabled'}>
     ${f.duels.length ? `<button class="btn primary" data-act="shotFx">${ic('cam')}Captură meci</button><button class="btn" data-act="copyFx">${ic('copy')}Copiază fișa</button><button class="btn" data-act="print">${ic('print')}Printează</button>` : ''}</div></div>
     <div class="match-head" style="--hc:${esc(H?.color)};--ac:${esc(A?.color)}">
       <div class="side">${emblem(H, 84)}<h3>${esc(H?.name)}</h3><span class="muted">${esc(H?.manager || '')}</span></div>
-      <div class="score"><div class="dim" style="font-size:12px;margin-bottom:6px">ETAPA ${f.round}</div><div class="big" id="fx-score">${r.drawn ? `${r.uH}–${r.uA}` : 'VS'}</div><div class="lbl">${unitLbl(S)} câștigate</div><div id="fx-sub" style="margin-top:10px">${fxSub(t, f)}</div></div>
+      <div class="score"><div class="dim" style="font-size:12px;margin-bottom:6px">ETAPA ${f.round}</div><div class="big" id="fx-score">${r.drawn ? `${r.uH}–${r.uA}` : 'VS'}</div><div class="lbl">${unitLbl(S)} câștigate</div><div id="fx-sub" style="margin-top:10px">${fxSub(t, f)}</div>${roundDl(t, f.round) ? `<div style="margin-top:8px"><div class="dim" style="font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px">Finalizare etapă</div>${dlChip(roundDl(t, f.round), r.complete)}</div>` : ''}</div>
       <div class="side">${emblem(A, 84)}<h3>${esc(A?.name)}</h3><span class="muted">${esc(A?.manager || '')}</span></div></div>`;
   if (!f.duels.length){
     const lh = lineup(t, f, 'home'), la = lineup(t, f, 'away'), ok = lh.length > 0 && lh.length === la.length;
@@ -1025,7 +1129,7 @@ function vFixture(t){
   const gh = Array.from({length: S.matchesPerDuel}, (_, i) => `<th class="c">Meci ${i + 1}</th>`).join('');
   return head + `<div class="card"><h3>${ic('swap')}Dueluri · ${f.duels.length} perechi<span class="sp"></span>
       ${!r.touched ? `<button class="btn sm edt" data-act="redraw">${ic('shuffle', 14)}Re-extrage</button>` : ''}<button class="btn sm ghost edt" data-act="undoDraw">${ic('undo', 14)}Anulează extragerea</button></h3>
-    <div class="tw"><table class="tbl duels ${ui.justDrawn === f.id ? 'reveal' : ''}"><thead><tr><th class="c">#</th><th>${esc(H?.name)}</th>${gh}<th class="c">Total</th><th>${esc(A?.name)}</th><th class="c">Captură / Neprezentare</th></tr></thead><tbody>
+    <div class="tw"><table class="tbl duels ${ui.justDrawn === f.id ? 'reveal' : ''}"><thead><tr><th class="c">#</th><th>${esc(H?.name)}</th>${gh}<th class="c">Total</th><th>${esc(A?.name)}</th><th class="c">Termen finalizare</th><th class="c">Captură / Neprezentare</th></tr></thead><tbody>
     ${f.duels.map((d, i) => duelRow(t, f, d, i)).join('')}</tbody></table></div>
     <p class="dim" style="font-size:12px;margin:12px 0 0">Scorul se salvează pe loc. ${S.duelMode === 'aggregate' ? 'Duelul îl câștigă cine are mai multe goluri cumulat din cele ' + S.matchesPerDuel + ' meciuri; egalitate = duel egal.' : S.duelMode === 'wins' ? 'Duelul îl câștigă cine ia mai multe meciuri; la egalitate decide golaverajul.' : 'Fiecare meci se numără separat pentru ligă.'} Neprezentare = ${S.forfeitGoals}-0 la fiecare meci.</p></div>`;
 }
@@ -1039,12 +1143,15 @@ function fxSub(t, f){
 function duelRow(t, f, d, i){
   const S = t.settings, r = duelRes(d, S), hp = Pl(t, d.homePid), ap = Pl(t, d.awayPid);
   const cls = r.complete ? r.out : '';
+  const dl = duelDl(t, f, d), dst = dlState(dl, r.complete);
+  const dlCell = `<td class="c dlc"><span class="glbl">Termen</span>${dl ? `<button type="button" class="dlbtn ${dst?.cls || ''}" ${canEdit() ? `data-act="duelDl" data-duel="${d.id}"` : 'disabled'} title="${d.deadline ? 'Termen propriu al duelului' : 'Termenul etapei'}">${ic('clock', 13)}<span class="dlt">${dst && dst.k !== 'done' ? cdSpan(dl, dst) : ''}<span>${esc(dlShort(dl))}${d.deadline ? '' : ' · etapă'}</span></span></button>` : canEdit() ? `<button type="button" class="dlbtn" data-act="duelDl" data-duel="${d.id}">${ic('clock', 13)}<span>Setează</span></button>` : '<span class="dim">–</span>'}</td>`;
   const games = d.games.map((g, gi) => `<td class="c g"><span class="glbl">Meci ${gi + 1}</span><span class="gi"><input type="number" min="0" max="99" inputmode="numeric" value="${g.h ?? ''}" data-in="score" data-duel="${d.id}" data-g="${gi}" data-s="h" ${d.forfeit || !canEdit() ? 'disabled' : ''}><span class="dim">:</span><input type="number" min="0" max="99" inputmode="numeric" value="${g.a ?? ''}" data-in="score" data-duel="${d.id}" data-g="${gi}" data-s="a" ${d.forfeit || !canEdit() ? 'disabled' : ''}></span></td>`).join('');
   return `<tr id="dr-${d.id}" class="${cls}" style="${ui.justDrawn === f.id ? `animation-delay:${i * 110}ms` : ''}"><td class="c dim num">${i + 1}</td>
     <td class="hcell"><div class="row pr" style="flex-wrap:nowrap;gap:4px">${plCell(t, hp)}<button class="icon-btn noprint edt" title="Înlocuiește jucătorul" data-act="sub" data-duel="${d.id}" data-side="home">${ic('swap', 14)}</button></div></td>
     ${games}<td class="tot" id="dt-${d.id}">${duelTot(r)}</td>
     <td class="gsum"><button type="button" class="scorebtn ${r.complete ? 'done' : ''}" ${canEdit() ? `data-act="scoreSheet" data-duel="${d.id}"` : 'disabled'}><span class="chips">${d.forfeit ? `<span>W.O. · lipsește ${d.forfeit === 'home' ? 'gazda' : 'oaspetele'}</span>` : d.games.map((g, k) => `<span>M${k + 1} <b>${g.h ?? '–'} : ${g.a ?? '–'}</b></span>`).join('')}</span>${canEdit() ? `<span class="cta">${r.complete || r.played ? 'Modifică' : 'Introdu scorul'}${ic('chev', 16)}</span>` : ''}</button></td>
     <td class="acell"><div class="row pr" style="flex-wrap:nowrap;gap:4px">${plCell(t, ap)}<button class="icon-btn noprint edt" title="Înlocuiește jucătorul" data-act="sub" data-duel="${d.id}" data-side="away">${ic('swap', 14)}</button></div></td>
+    ${dlCell}
     <td class="c wo" style="white-space:nowrap"><span class="glbl">Duel ${i + 1}</span><button class="icon-btn noprint" title="Captură duel" data-act="shotDuel" data-duel="${d.id}">${ic('cam', 15)}</button> <select data-change="forfeit" data-duel="${d.id}" ${canEdit() ? '' : 'disabled'}><option value="">—</option><option value="home" ${d.forfeit === 'home' ? 'selected' : ''}>Lipsește gazda</option><option value="away" ${d.forfeit === 'away' ? 'selected' : ''}>Lipsește oaspetele</option></select></td></tr>`;
 }
 const duelTot = r => r.played || r.forfeit ? `${r.hg} : ${r.ag}${r.forfeit ? '<div class="dim" style="font-size:10px">W.O.</div>' : ''}` : '<span class="dim">–</span>';
@@ -1058,10 +1165,11 @@ function fixtureText(t, f){
   const S = t.settings, H = Lg(t, f.homeId), A = Lg(t, f.awayId), r = fixtureRes(t, f);
   let s = `${t.name} – Etapa ${f.round}\n${H.name} ${r.drawn ? r.uH + '-' + r.uA : 'vs'} ${A.name}\n`;
   if (f.date) s += new Date(f.date).toLocaleString('ro-RO') + '\n';
+  if (roundDl(t, f.round)) s += 'Termen de finalizare: ' + fmtDl(roundDl(t, f.round), true) + '\n';
   s += '\n';
   f.duels.forEach((d, i) => { const dr = duelRes(d, S), hp = Pl(t, d.homePid), ap = Pl(t, d.awayPid);
     const sc = d.forfeit ? `W.O. ${dr.hg}-${dr.ag}` : d.games.map(g => g.h == null || g.a == null ? '_-_' : `${g.h}-${g.a}`).join(' / ');
-    s += `${i + 1}. ${hp?.name || '?'} vs ${ap?.name || '?'}   ${sc}${dr.complete && !d.forfeit ? `  (total ${dr.hg}-${dr.ag})` : ''}\n`; });
+    s += `${i + 1}. ${hp?.name || '?'} vs ${ap?.name || '?'}   ${sc}${dr.complete && !d.forfeit ? `  (total ${dr.hg}-${dr.ag})` : ''}${d.deadline ? `  [termen ${dlShort(d.deadline)}]` : ''}\n`; });
   if (r.complete) s += `\nRezultat: ${r.out === 'H' ? H.name + ' câștigă' : r.out === 'A' ? A.name + ' câștigă' : 'Egal'} (${unitLbl(S).toLowerCase()} ${r.uH}-${r.uA}, goluri ${r.gH}-${r.gA})`;
   return s;
 }
@@ -1146,7 +1254,7 @@ function vSettings(t){
     </div>
   </div>
   <div class="grid g2" style="margin-top:16px">
-    <div class="card"><h3>${ic('trophy')}Turnee</h3><p class="muted" style="margin-top:0">Turneele noi, cele în desfășurare și istoricul celor încheiate sunt pe pagina dedicată.</p><button class="btn primary" data-act="go" data-v="tournaments">${ic('trophy')}Toate turneele</button></div>
+    <div class="card"><h3>${ic('trophy')}Turnee</h3><p class="muted" style="margin-top:0">Turneele noi, cele în desfășurare și istoricul celor încheiate sunt pe pagina dedicată.</p><div class="row"><button class="btn primary" data-act="go" data-v="tournaments">${ic('trophy')}Toate turneele</button><button class="btn" data-act="go" data-v="rules">${ic('list')}Regulament</button></div></div>
     <div class="card"><h3>${ic('save')}Bază de date & backup</h3>
       <p class="muted" style="margin-top:0">${Sync.mode === 'cloud' ? `Datele sunt în Firebase (nodul <code>${DB_ROOT}</code>) și se sincronizează live pe toate dispozitivele. Fă din când în când un backup JSON.` : 'Aplicația rulează în mod local (fără conexiune la Firebase). Datele rămân doar în acest browser.'}</p>
       <div class="row"><button class="btn" data-act="exportJSON">${ic('down')}Descarcă backup</button><button class="btn" data-act="importJSON">${ic('up')}Restaurează din backup</button><button class="btn" data-act="showAudit">${ic('list')}Jurnal modificări</button></div>
@@ -1193,17 +1301,135 @@ function vRules(t){
     wins: `Fiecare pereche joacă ${S.matchesPerDuel} meciuri. Câștigă duelul cine câștigă mai multe meciuri; la egalitate decide golaverajul.`,
     matches: `Fiecare pereche joacă ${S.matchesPerDuel} meciuri și fiecare meci se numără separat pentru ligă.`}[S.duelMode];
   const tb = {duels: `diferența de ${u}, golaverajul, golurile marcate`, gd: `golaverajul, golurile marcate, diferența de ${u}`, h2h: `meciul direct, diferența de ${u}, golaverajul`}[S.tiebreak];
-  return `<div class="ph"><div><h2>Regulament</h2><p>${esc(t.name)} · sezon ${esc(t.season)}</p></div></div>
-  <div class="card rules"><ol>
+  const note = (k, icon, title, body) => `<div class="rnote ${k}">${ic(icon, 18)}<div><b class="t">${title}</b>${body}</div></div>`;
+  const sec = (n, title, tag, body) => `<section class="rsec" id="h2h-${n}"><div class="rsec-h"><span class="rnum">0${n}</span><div><h3>${title}</h3>${tag ? `<span class="rtag">${tag}</span>` : ''}</div></div><div class="rsec-b">${body}</div></section>`;
+  const arrow = `<span class="ar">${ic('chev', 18)}</span>`;
+  const TOC = ['Formatul competiției', 'Dovezile rezultatelor', 'Înregistrarea video și verificarea identității', 'Deconectări și incidente tehnice', 'Comportamentul participanților', 'Contestații și validarea rezultatelor', 'Fair-play în timpul jocului', 'Regula de departajare'];
+  return `<div class="ph"><div><h2>Regulament</h2><p>${esc(t.name)} · sezon ${esc(t.season)}</p></div>
+    <div class="row noprint"><button class="btn" data-act="rulesJump" data-id="r-liga">${ic('list')}Regulamentul ligii</button><button class="btn" data-act="rulesJump" data-id="h2h">${ic('trophy')}Regulament H2H</button><button class="btn" data-act="print">${ic('print')}Printează</button></div></div>
+
+  <div class="card rules" id="r-liga"><h3>${ic('list')}Partea I · Regulamentul ligii<span class="sp"></span><span class="chip">format, punctaj, termene</span></h3><ol>
     <li><b>Format.</b> ${t.leagues.length} ligi, ${S.legs === 2 ? 'tur-retur' : 'fiecare ligă joacă o dată cu fiecare'}. Programul pe etape e tras la sorți.</li>
     <li><b>Loturi.</b> Fiecare ligă are ${S.starters} titulari și ${S.reserves} rezerve. Înainte de meci se pot înlocui titulari cu rezerve.</li>
     <li><b>Perechi.</b> La fiecare meci între ligi, aplicația trage la sorți adversarul fiecărui jucător (${S.starters} dueluri).</li>
     <li><b>Duel.</b> ${mode}</li>
     <li><b>Rezultatul meciului.</b> Liga cu mai multe ${u} câștigate ia ${S.ptsWin} puncte. La egalitate fiecare ia ${S.ptsDraw} ${S.ptsDraw === 1 ? 'punct' : 'puncte'}${S.ptsLoss ? `; înfrângere ${S.ptsLoss}` : ''}.</li>
+    <li><b>Termene de finalizare.</b> Fiecare etapă are o dată și o oră până la care toate meciurile trebuie jucate și raportate; timpul rămas se vede în Program și pe fiecare meci. Un duel poate avea și termen propriu; dacă nu are, se aplică termenul etapei.</li>
     <li><b>Neprezentare.</b> Jucătorul care nu se prezintă pierde ${S.forfeitGoals}-0 fiecare meci al duelului.</li>
-    <li><b>Departajare.</b> La egalitate de puncte contează: ${tb}.</li>
+    <li><b>Departajare în clasament.</b> La egalitate de puncte contează: ${tb}.</li>
   </ol></div>
-  ${loggedIn() ? '' : `<div class="card" style="margin-top:16px"><h3>${ic('lock')}Ești organizator sau editor?</h3><p class="muted" style="margin-top:0">Autentifică-te ca să poți introduce scoruri.</p><button class="btn primary" data-act="login">${ic('lock')}Autentificare</button></div>`}`;
+
+  <div class="h2h-hero" id="h2h">
+    <div class="kicker">Partea a II-a · Regulament oficial · ediția curentă</div>
+    <h2>${ic('trophy')}H2H Championship</h2>
+    <div class="tagline">INTEGRITATE · FAIR-PLAY · RESPECT</div>
+    <p><b>Bine ai venit în competiția H2H!</b> Pentru un mediu competitiv, corect și transparent, toți participanții au obligația de a respecta prezentul regulament.</p>
+    <p class="muted">Regulamentul se aplică tuturor echipelor și jucătorilor înscriși în competiție, fără excepții.</p>
+    <div class="rtoc noprint">${TOC.map((x, i) => `<button type="button" data-act="rulesJump" data-id="h2h-${i + 1}"><span class="n">0${i + 1}</span><span>${x}</span></button>`).join('')}</div>
+  </div>
+
+  ${sec(1, 'Formatul competiției', 'Sistem tur – retur', `
+    <ul>
+      <li>Fiecare confruntare se dispută în sistem <b>TUR – RETUR</b>.</li>
+      <li>Fiecare jucător are obligația de a disputa <b>ambele manșe</b> împotriva adversarului desemnat.</li>
+      <li>Rezultatele ambelor manșe trebuie documentate și confirmate de participanți.</li>
+    </ul>
+    ${note('info', 'list', 'Important', 'O confruntare este considerată completă doar după disputarea ambelor manșe și verificarea rezultatelor.')}`)}
+
+  ${sec(2, 'Dovezile rezultatelor', 'Capturile de ecran sunt obligatorii', `
+    <p>Pentru fiecare partidă disputată, <b>ambii jucători</b> urmează procedura:</p>
+    <div class="rgrid">
+      <div class="rcard"><span class="k">PASUL 1</span><b>Captură de ecran</b><span>Cu rezultatul final, după fiecare manșă.</span></div>
+      <div class="rcard"><span class="k">PASUL 2</span><b>Publicare</b><span>Pe canalul dedicat <b>REZULTATE</b>.</span></div>
+      <div class="rcard"><span class="k">PASUL 3</span><b>Claritate</b><span>Imaginile trebuie să permită verificarea scorului.</span></div>
+    </div>
+    ${note('warn', 'alert', 'Atenție', 'Lipsa dovezilor poate determina organizatorii să solicite clarificări suplimentare înainte de validarea rezultatului.')}`)}
+
+  ${sec(3, 'Înregistrarea video și verificarea identității', 'Obligatoriu', `
+    <p>Pentru a preveni situațiile în care altă persoană joacă de pe contul participantului înscris, se instituie procedura obligatorie de <b>înregistrare a ecranului</b>.</p>
+    <p>Ambii jucători înregistrează ecranul <b>pentru fiecare manșă</b> (TUR și RETUR), indiferent cine creează partida — tu sau adversarul.</p>
+    <h4>Ce trebuie să surprindă înregistrarea</h4>
+    <div class="rflow">
+      <div class="st"><b>1 · WhatsApp</b><span>Conversația cu adversarul desemnat</span></div>${arrow}
+      <div class="st"><b>2 · Contul FC Mobile</b><span>Profilul și identitatea contului de joc</span></div>${arrow}
+      <div class="st"><b>3 · Trecerea în joc</b><span>Tranziția continuă din WhatsApp în FC Mobile</span></div>${arrow}
+      <div class="st end"><b>4 · Intrarea în partidă</b><span>Accesul efectiv în meciul cu adversarul</span></div>
+    </div>
+    <h4>Durata și condițiile înregistrării</h4>
+    <ul>
+      <li>Începe din momentul conversației cu adversarul pe WhatsApp.</li>
+      <li>Continuă fără întrerupere până după intrarea ambilor jucători în partidă; apoi poate fi oprită.</li>
+      <li>Filmarea trebuie să fie <b>continuă, fără întreruperi sau editări</b>.</li>
+    </ul>
+    <h4>Transmiterea înregistrării</h4>
+    <p>Videoclipul se transmite adversarului prin WhatsApp, la solicitarea acestuia sau conform înțelegerii dintre participanți.</p>
+    ${note('info', 'users', 'Excepție – acord comun', 'Înregistrarea poate fi omisă <b>doar</b> dacă ambii adversari stabilesc de comun acord, <b>înainte</b> de partidă, să renunțe la ea. În acest caz niciunul nu mai poate solicita ulterior filmarea și nimeni nu poate invoca lipsa ei pentru a contesta rezultatul.')}
+    ${note('bad', 'video', 'Sancțiune – lipsa înregistrării', 'Dacă jucătorul declarat învingător nu are înregistrarea video a partidei și nu există acord de renunțare, se <b>rejoacă exclusiv partida respectivă</b>. Nu se reia întreaga confruntare tur – retur, ci doar manșa pentru care lipsește dovada video.')}`)}
+
+  ${sec(4, 'Deconectări și incidente tehnice', '', `
+    <p>În cazul unei deconectări involuntare în timpul partidei:</p>
+    <ul>
+      <li>Jucătorul deconectat prezintă <b>dovezi concrete</b> ale incidentului tehnic.</li>
+      <li>Dovezile trebuie să arate că deconectarea a fost neintenționată.</li>
+      <li>Dacă organizatorii confirmă incidentul, partida se reia <b>de la scorul din momentul întreruperii</b>.</li>
+    </ul>
+    <h4>Exemplu</h4>
+    <div class="rscore"><div style="text-align:center"><div class="dim" style="font-size:11px;letter-spacing:1px">SCOR LA DECONECTARE</div><div class="v">2 – 1</div></div>${ic('chev', 22)}<div style="text-align:center"><div class="dim" style="font-size:11px;letter-spacing:1px">PARTIDA SE REIA DE LA</div><div class="v" style="color:var(--acc)">2 – 1</div></div></div>
+    <p class="muted" style="margin:0">Partida nu se reia de la 0–0.</p>
+    ${note('warn', 'shield', 'Decizia organizatorilor', 'Nu orice deconectare justifică automat reluarea. Organizatorii analizează dovezile și decid dacă incidentul este valid.')}`)}
+
+  ${sec(5, 'Comportamentul participanților', 'Toleranță zero pentru abateri grave', `
+    <p>Pe toată durata competiției, participanții manifestă respect față de adversari, organizatori și ceilalți membri ai comunității.</p>
+    <h4>Strict interzise</h4>
+    <ul>
+      <li>Înjurăturile și orice formă de limbaj vulgar.</li>
+      <li>Jignirile personale și atacurile la adresa adversarilor.</li>
+      <li>Provocările, amenințările și mesajele ofensatoare.</li>
+      <li>Certurile, conflictele și escaladarea discuțiilor între participanți.</li>
+      <li>Orice comportament care afectează buna desfășurare a competiției.</li>
+    </ul>
+    <p>Orice neînțelegere se comunică organizatorilor. Grupurile de comunicare nu trebuie transformate în spații de conflict.</p>
+    ${note('bad', 'alert', 'Consecință – excluderea din turneu', 'Orice abatere gravă (inclusiv înjurăturile sau provocarea intenționată a conflictelor) poate atrage excluderea din turneu. <b>Sancțiunea se aplică la nivelul echipei</b>, nu doar jucătorului implicat.')}`)}
+
+  ${sec(6, 'Contestații și validarea rezultatelor', '', `
+    <ol>
+      <li>Orice contestație trebuie însoțită de <b>dovezi concrete</b>.</li>
+      <li>Nemulțumirea față de rezultat nu este un motiv valid pentru rejucarea partidei.</li>
+      <li>Solicitările unilaterale de rejucare nu sunt suficiente pentru modificarea unui rezultat.</li>
+      <li>Orice incident este analizat de organizatori, care iau decizia finală.</li>
+    </ol>
+    ${note('info', 'shield', 'Autoritatea organizatorilor', 'Deciziile finale privind validarea rezultatelor, soluționarea contestațiilor și aplicarea sancțiunilor aparțin organizatorilor competiției.')}`)}
+
+  ${sec(7, 'Fair-play în timpul jocului', 'Practici interzise', `
+    <div class="rgrid">
+      <div class="rcard"><span class="k">01</span><b>Tragerile de timp</b><span>Păstrarea intenționată și repetată a posesiei doar pentru a consuma timpul, fără a mai construi faze ofensive.</span></div>
+      <div class="rcard"><span class="k">02</span><b>Kick-Off Glitch</b><span>Folosirea intenționată a acestei exploatări imediat după reluarea de la centru, pentru un avantaj neloial.</span></div>
+      <div class="rcard"><span class="k">03</span><b>Alte practici nesportive</b><span>Orice exploatare intenționată menită să destabilizeze adversarul, inclusiv emoji-uri negative folosite provocator.</span></div>
+    </div>
+    ${note('warn', 'alert', 'Important', 'Aceste practici sunt abateri de la fair-play indiferent de scor sau de minutul în care sunt folosite.')}
+    <h4>Dovedirea abaterilor și sancțiuni</h4>
+    <ul>
+      <li>Orice abatere trebuie susținută cu <b>dovezi video</b>, analizate de organizatori.</li>
+      <li>Sancțiunea depinde de gravitatea și repetarea abaterii.</li>
+    </ul>
+    <div class="rpills"><span class="chip warn">Avertisment</span>${ic('chev', 14)}<span class="chip bad">Pierderea partidei</span>${ic('chev', 14)}<span class="chip bad">Excluderea din competiție</span></div>`)}
+
+  ${sec(8, 'Regula de departajare', 'Meci decisiv', `
+    <p>Dacă scorul general este <b>egal după TUR și RETUR</b>, câștigătorul confruntării se stabilește astfel:</p>
+    <div class="rflow">
+      <div class="st"><b>TUR + RETUR</b><span>Scor general egal</span></div>${arrow}
+      <div class="st"><b>MECIUL 3 · decisiv</b><span>Se joacă obligatoriu</span></div>${arrow}
+      <div class="st"><b>PRELUNGIRI</b><span>Dacă meciul 3 se termină egal</span></div>${arrow}
+      <div class="st end"><b>LOVITURI DE DEPARTAJARE</b><span>Dacă egalitatea persistă</span></div>
+    </div>`)}
+
+  <div class="rclose">
+    <div class="dim" style="font-size:11px;letter-spacing:2px;font-weight:700;margin-bottom:8px">PRINCIPIUL COMPETIȚIEI</div>
+    <div class="big">Jucăm pentru victorie, dar cu respect față de adversar.<br><span style="color:var(--acc)">Fair-play înseamnă caracter, nu doar fotbal.</span></div>
+    <p>Ne dorim o competiție corectă, transparentă și competitivă, în care rezultatele se stabilesc exclusiv prin joc — nu prin dispute, suspiciuni sau interpretări personale. Participarea presupune acceptarea și respectarea integrală a prezentului regulament.</p>
+    <div class="foot">MULT SUCCES TUTUROR ECHIPELOR! · H2H CHAMPIONSHIP</div>
+  </div>
+  ${loggedIn() ? '' : `<div class="card noprint" style="margin-top:16px"><h3>${ic('lock')}Ești organizator sau editor?</h3><p class="muted" style="margin-top:0">Autentifică-te ca să poți introduce scoruri.</p><button class="btn primary" data-act="login">${ic('lock')}Autentificare</button></div>`}`;
 }
 
 /* ---------- demo ---------- */
@@ -1255,7 +1481,7 @@ async function shotFixture(t, f){
   const S = t.settings, H = Lg(t, f.homeId), A = Lg(t, f.awayId), r = fixtureRes(t, f), n = f.duels.length, W = 1080, rowH = 62, top = 372;
   return makeShot(W, top + 44 + n * rowH + 86, t, async x => {
     tx(x, `${t.name.toUpperCase()}  ·  ETAPA ${f.round}`, W / 2, 40, {font: FT(800, 16), color: CV.acc, align: 'center', max: W - 80});
-    tx(x, f.date ? new Date(f.date).toLocaleString('ro-RO', {weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit'}) : 'Meci între ligi', W / 2, 66, {font: FT(500, 15), color: CV.muted, align: 'center'});
+    tx(x, (f.date ? new Date(f.date).toLocaleString('ro-RO', {weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit'}) : 'Meci între ligi') + (roundDl(t, f.round) ? '  ·  Termen de finalizare: ' + fmtDl(roundDl(t, f.round)) : ''), W / 2, 66, {font: FT(500, 15), color: CV.muted, align: 'center', max: W - 80});
     box(x, 30, 88, W - 60, 262, 24, CV.panel, CV.border);
     const g = x.createLinearGradient(30, 0, W - 30, 0); g.addColorStop(0, hexA(H.color, .3)); g.addColorStop(.42, hexA(H.color, 0)); g.addColorStop(.58, hexA(A.color, 0)); g.addColorStop(1, hexA(A.color, .3));
     rr(x, 30, 88, W - 60, 262, 24); x.fillStyle = g; x.fill();
@@ -1318,7 +1544,7 @@ async function shotRound(t, round){
     const done = fx.filter(f => fixtureRes(t, f).complete).length;
     tx(x, t.name.toUpperCase(), 40, 44, {font: FT(800, 16), color: CV.acc, max: W - 80});
     tx(x, `Etapa ${round}`, 40, 88, {font: FT(900, 42)});
-    tx(x, `${done}/${fx.length} meciuri finalizate · ${S.starters} dueluri × ${S.matchesPerDuel} meciuri`, 40, 126, {font: FT(500, 16), color: CV.muted});
+    tx(x, `${done}/${fx.length} meciuri finalizate · ${S.starters} dueluri × ${S.matchesPerDuel} meciuri${roundDl(t, round) ? ' · Termen: ' + fmtDl(roundDl(t, round)) : ''}`, 40, 126, {font: FT(500, 16), color: CV.muted, max: W - 80});
     for (let i = 0; i < fx.length; i++){
       const f = fx[i], r = fixtureRes(t, f), H = Lg(t, f.homeId), A = Lg(t, f.awayId), y = top + i * (fh + 14), cy = y + fh / 2;
       box(x, 30, y, W - 60, fh, 18, CV.panel, CV.border);
@@ -1382,6 +1608,24 @@ const toBlob = c => new Promise(r => c.toBlob(r, 'image/png'));
 /* ---------- acțiuni ---------- */
 const A = {
   go: d => { ui.view = d.v === 'settings' && !isAdmin() ? 'rules' : d.v; render(); window.scrollTo(0, 0); },
+  rulesJump: d => document.getElementById(d.id)?.scrollIntoView({behavior: 'smooth', block: 'start'}),
+  roundDl: d => { const t = T(), r = +d.r, cur = roundDl(t, r);
+    modal(`Termen de finalizare · Etapa ${r}`, `<p class="muted" style="margin-top:0">Data și ora până la care trebuie jucate și introduse toate meciurile din <b>etapa ${r}</b>. Duelurile fără termen propriu preiau automat acest termen.</p>
+      <div class="fg"><label>Data și ora de finalizare</label><input type="datetime-local" name="dl" value="${esc(cur)}"></div>
+      ${cur ? '<label class="check"><input type="checkbox" name="clear"> Elimină termenul etapei</label>' : ''}`,
+      {onSubmit: fd => { const v = fd.clear ? '' : (fd.dl || ''); t.deadlines = t.deadlines || {};
+        if (v) t.deadlines['r' + r] = v; else delete t.deadlines['r' + r];
+        Sync.w(`${Sync.tp(t)}/deadlines/r${r}`, v || null); Sync.audit(`Termen etapa ${r}: ${v ? fmtDl(v) : 'eliminat'}`);
+        toast(v ? 'Termen salvat' : 'Termen eliminat'); render(); }}); },
+  duelDl: d => { const t = T(), f = t.fixtures.find(x => x.id === ui.fxId), du = f?.duels.find(x => x.id === d.duel); if (!du) return;
+    const i = f.duels.indexOf(du), rd = roundDl(t, f.round);
+    modal(`Termen de finalizare · Duel ${i + 1}`, `<p class="muted" style="margin-top:0"><b>${esc(Pl(t, du.homePid)?.name || '?')}</b> vs <b>${esc(Pl(t, du.awayPid)?.name || '?')}</b> · ${esc(fxLabel(t, f))}</p>
+      <div class="fg"><label>Data și ora de finalizare a duelului</label><input type="datetime-local" name="dl" value="${esc(du.deadline || '')}"><span class="hint">${rd ? `Lasă gol ca să se aplice termenul etapei: <b>${esc(fmtDl(rd))}</b>.` : 'Etapa nu are termen setat; dacă lași gol, duelul rămâne fără termen.'}</span></div>
+      <label class="check"><input type="checkbox" name="all"> Aplică același termen tuturor celor ${f.duels.length} dueluri din acest meci</label>`,
+      {onSubmit: fd => { const v = fd.dl || ''; (fd.all ? f.duels : [du]).forEach(x => { x.deadline = v; });
+        if (fd.all) Sync.saveFx(t, f); else Sync.saveDuel(t, f, du);
+        Sync.audit(`Termen ${fxLabel(t, f)} · ${fd.all ? 'toate duelurile' : 'duel ' + (i + 1)}: ${v ? fmtDl(v) : 'termenul etapei'}`);
+        toast('Termen salvat'); render(); }}); },
   closeModal: () => closeModal(),
   exportJSON: () => { download(`backup-interligi-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(state, null, 1), 'application/json'); toast('Backup descărcat'); },
   importJSON: () => $('#importInput').click(),
@@ -1536,7 +1780,7 @@ function copyRoster(src, dst){
 
 /* ---------- evenimente ---------- */
 const NEED_ADMIN = new Set(['finishT', 'reopenT', 'renameT', 'addLeague', 'editLeague', 'delLeague', 'bulkAdd', 'addPlayer', 'toggleRole', 'editPlayer', 'delPlayer', 'genSchedule', 'newTournament', 'activateT', 'dupT', 'delT', 'resetResults', 'resetApp', 'exportJSON', 'importJSON', 'showAudit']);
-const NEED_EDIT = new Set(['togglePick', 'resetPick', 'clearPick', 'draw', 'redraw', 'undoDraw', 'sub', 'doSub', 'scoreSheet', 'stp', 'sheetWO', 'sheetClear', 'sheetNext', 'sheetGo']);
+const NEED_EDIT = new Set(['roundDl', 'duelDl', 'togglePick', 'resetPick', 'clearPick', 'draw', 'redraw', 'undoDraw', 'sub', 'doSub', 'scoreSheet', 'stp', 'sheetWO', 'sheetClear', 'sheetNext', 'sheetGo']);
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
   const act = el.dataset.act;
@@ -1609,7 +1853,9 @@ function paintSheet(){
   const step = (k, side) => { const v = s.games[k][side]; return `<div class="stepper"><button type="button" class="sbtn" data-act="stp" data-k="${k}" data-s="${side}" data-v="-1" aria-label="minus">${ic('minus', 22)}</button>
     <input type="number" inputmode="numeric" min="0" max="99" value="${v ?? ''}" data-sheet="1" data-k="${k}" data-s="${side}" onfocus="this.select()"><button type="button" class="sbtn plus" data-act="stp" data-k="${k}" data-s="${side}" data-v="1" aria-label="plus">${ic('plus', 22)}</button></div>`; };
   const others = f.duels.map((x, j) => { const r = duelRes(x, t.settings); return `<button type="button" class="dot ${x.id === d.id ? 'on' : ''} ${r.complete ? 'ok' : r.played ? 'part' : ''}" data-act="sheetGo" data-duel="${x.id}">${j + 1}</button>`; }).join('');
+  const sdl = duelDl(t, f, d);
   $('#sheet').innerHTML = `<div class="sp-head">${pl(hp, H)}<div class="sp-tot" id="sp-tot"></div>${pl(ap, A_)}</div>
+    ${sdl ? `<div style="text-align:center;margin:0 0 10px">${dlChip(sdl, duelRes(d, t.settings).complete)}</div>` : ''}
     ${s.games.map((g, k) => `<div class="sp-game ${s.forfeit ? 'off' : ''}"><div class="lbl">Meci ${k + 1}</div><div class="sp-row">${step(k, 'h')}<span class="colon">:</span>${step(k, 'a')}</div></div>`).join('')}
     <div class="sp-wo"><span class="muted" style="font-size:12px">Neprezentare</span><div class="seg"><button type="button" class="${!s.forfeit ? 'on' : ''}" data-act="sheetWO" data-v="">Nu</button><button type="button" class="${s.forfeit === 'home' ? 'on' : ''}" data-act="sheetWO" data-v="home">Lipsește ${esc((hp?.name || 'gazda').split(' ')[0])}</button><button type="button" class="${s.forfeit === 'away' ? 'on' : ''}" data-act="sheetWO" data-v="away">Lipsește ${esc((ap?.name || 'oaspetele').split(' ')[0])}</button></div></div>
     <div class="dots">${others}</div>
